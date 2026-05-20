@@ -5,11 +5,13 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened, closed]
 
 jobs:
   deploy:
     name: Build & Deploy
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.action != 'closed'
     permissions:
       contents: read
       deployments: write  # needed for Cloudflare Pages deployment status
@@ -36,3 +38,27 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           command: pages deploy dist --project-name=hierynomus-speaking-site --branch=${{ github.ref == 'refs/heads/main' && 'main' || github.head_ref }}
+
+  cleanup:
+    name: Delete preview deployment
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    permissions:
+      contents: read
+
+    steps:
+      - name: Delete Cloudflare Pages preview deployments for branch
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          DEPLOYMENTS=$(curl -s \
+            "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/hierynomus-speaking-site/deployments" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}")
+
+          echo "$DEPLOYMENTS" | jq -r \
+            ".result[] | select(.deployment_trigger.metadata.branch == \"$BRANCH\") | .id" \
+          | while read -r ID; do
+            echo "Deleting deployment $ID for branch $BRANCH"
+            curl -s -X DELETE \
+              "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/hierynomus-speaking-site/deployments/$ID?force=true" \
+              -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          done
