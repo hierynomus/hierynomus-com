@@ -14,8 +14,6 @@ jobs:
       contents: read
       deployments: write  # needed for Cloudflare Pages deployment status
       pull-requests: write # needed for PR preview URL comments
-    env:
-      MISE_TRUSTED_CONFIG_PATHS: ${{ github.workspace }}
 
     steps:
       - name: Checkout
@@ -24,9 +22,6 @@ jobs:
       - name: Set up Node.js via mise
         uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
 
-      - name: Trust mise config
-        run: mise trust
-
       - name: Install dependencies
         run: npm ci
 
@@ -34,13 +29,8 @@ jobs:
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@f0a1cd58cd66095dee69bfa18fa5efd1dde93bca # v1
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: hierynomus-speaking-site
-          directory: dist
-          # Posts a preview URL comment on pull requests
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          # Deploy to production only on pushes to main
-          branch: ${{ github.ref == 'refs/heads/main' && 'main' || github.head_ref }}
+          command: pages deploy dist --project-name=hierynomus-speaking-site --branch=${{ github.ref == 'refs/heads/main' && 'main' || github.head_ref }}
