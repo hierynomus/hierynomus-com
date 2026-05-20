@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <radialGradient id="bg3" cx="55%" cy="45%" r="85%">
+      <stop offset="0%" stop-color="#12223a"/>
+      <stop offset="100%" stop-color="#060e1c"/>
+    </radialGradient>
+    <radialGradient id="node-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2453ff" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#2453ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="green-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#30ba78" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#30ba78" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg3)"/>
+
+  <!-- Circuit board traces -->
+  <g stroke="#2453ff" stroke-width="1" fill="none" opacity="0.18">
+    <!-- Horizontal traces -->
+    <line x1="600" y1="140" x2="1180" y2="140"/>
+    <line x1="640" y1="200" x2="1180" y2="200"/>
+    <line x1="600" y1="260" x2="1180" y2="260"/>
+    <line x1="660" y1="320" x2="1180" y2="320"/>
+    <line x1="600" y1="380" x2="1180" y2="380"/>
+    <line x1="640" y1="440" x2="1180" y2="440"/>
+    <line x1="600" y1="500" x2="1180" y2="500"/>
+    <!-- Vertical traces -->
+    <line x1="700" y1="100" x2="700" y2="580"/>
+    <line x1="800" y1="120" x2="800" y2="560"/>
+    <line x1="900" y1="100" x2="900" y2="580"/>
+    <line x1="1000" y1="120" x2="1000" y2="560"/>
+    <line x1="1100" y1="100" x2="1100" y2="580"/>
+    <!-- Right-angle connectors -->
+    <path d="M700,140 L680,140 L680,200 L640,200" stroke-width="1"/>
+    <path d="M800,260 L820,260 L820,320 L840,320" stroke-width="1"/>
+    <path d="M900,380 L880,380 L880,440 L860,440" stroke-width="1"/>
+    <path d="M1000,200 L1020,200 L1020,260 L1040,260" stroke-width="1"/>
+    <path d="M1100,320 L1120,320 L1120,380 L1140,380" stroke-width="1"/>
+  </g>
+
+  <!-- Platform/node icons — the "platform engineering" visual -->
+  <!-- Central hub node -->
+  <circle cx="900" cy="315" r="42" fill="none" stroke="#2453ff" stroke-width="2" opacity="0.4"/>
+  <circle cx="900" cy="315" r="30" fill="#0a1830" stroke="#2453ff" stroke-width="1.5" opacity="0.8"/>
+  <circle cx="900" cy="315" r="18" fill="#2453ff" opacity="0.25"/>
+  <circle cx="900" cy="315" r="18" fill="url(#node-glow)"/>
+  <circle cx="900" cy="315" r="6" fill="#2453ff" opacity="0.9"/>
+
+  <!-- Spoke connections from hub -->
+  <g stroke="#2453ff" stroke-width="1.5" opacity="0.3">
+    <line x1="900" y1="315" x2="760" y2="200"/>
+    <line x1="900" y1="315" x2="1040" y2="200"/>
+    <line x1="900" y1="315" x2="1080" y2="350"/>
+    <line x1="900" y1="315" x2="1040" y2="450"/>
+    <line x1="900" y1="315" x2="760" y2="450"/>
+    <line x1="900" y1="315" x2="720" y2="350"/>
+  </g>
+
+  <!-- Satellite nodes -->
+  <g>
+    <!-- Node 1 -->
+    <circle cx="760" cy="200" r="20" fill="#0a1830" stroke="#30ba78" stroke-width="1.5" opacity="0.8"/>
+    <circle cx="760" cy="200" r="8" fill="#30ba78" opacity="0.5"/>
+    <circle cx="760" cy="200" r="22" fill="url(#green-glow)" opacity="0.6"/>
+    <!-- Node 2 -->
+    <circle cx="1040" cy="200" r="18" fill="#0a1830" stroke="#30ba78" stroke-width="1.5" opacity="0.7"/>
+    <circle cx="1040" cy="200" r="7" fill="#30ba78" opacity="0.4"/>
+    <!-- Node 3 -->
+    <circle cx="1080" cy="350" r="16" fill="#0a1830" stroke="#2453ff" stroke-width="1.5" opacity="0.7"/>
+    <circle cx="1080" cy="350" r="6" fill="#2453ff" opacity="0.5"/>
+    <!-- Node 4 -->
+    <circle cx="1040" cy="450" r="18" fill="#0a1830" stroke="#30ba78" stroke-width="1.5" opacity="0.7"/>
+    <circle cx="1040" cy="450" r="7" fill="#30ba78" opacity="0.4"/>
+    <!-- Node 5 -->
+    <circle cx="760" cy="450" r="16" fill="#0a1830" stroke="#2453ff" stroke-width="1.5" opacity="0.7"/>
+    <circle cx="760" cy="450" r="6" fill="#2453ff" opacity="0.4"/>
+    <!-- Node 6 -->
+    <circle cx="720" cy="350" r="14" fill="#0a1830" stroke="#30ba78" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="720" cy="350" r="5" fill="#30ba78" opacity="0.4"/>
+  </g>
+
+  <!-- Data flow dots along spokes (animated feel via multiple dots) -->
+  <g fill="#30ba78" opacity="0.5">
+    <circle cx="840" cy="268" r="2.5"/>
+    <circle cx="970" cy="255" r="2.5"/>
+    <circle cx="980" cy="330" r="2.5"/>
+    <circle cx="975" cy="378" r="2.5"/>
+    <circle cx="833" cy="375" r="2.5"/>
+    <circle cx="818" cy="332" r="2.5"/>
+  </g>
+
+  <!-- Top glow accent -->
+  <linearGradient id="top-glow" x1="50%" y1="0%" x2="50%" y2="100%">
+    <stop offset="0%" stop-color="#2453ff" stop-opacity="0.15"/>
+    <stop offset="100%" stop-color="#2453ff" stop-opacity="0"/>
+  </linearGradient>
+  <rect x="600" y="0" width="600" height="200" fill="url(#top-glow)"/>
+</svg>

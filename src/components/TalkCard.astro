@@ -1,0 +1,111 @@
+---
+import { TYPE_CONFIG } from '../config/talks';
+import type { TalkType } from '../config/talks';
+
+interface Props {
+  title: string;
+  event: string;
+  date: Date;
+  endDate?: Date;
+  type: TalkType;
+  tags: string[];
+  slug: string;
+  slides_url?: string;
+  video_url?: string;
+  compact?: boolean;
+}
+
+const { title, event, date, type, tags, slug, slides_url, video_url, compact = false } = Astro.props;
+const cfg = TYPE_CONFIG[type];
+
+const videoLabel =
+  type === 'podcast' ? '🎙 Listen' :
+  type === 'webinar' ? '▶ Watch Webinar' :
+  '▶ Watch';
+
+const dateLabel = date.toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+});
+---
+
+<article
+  class:list={[
+    'group flex flex-col bg-white dark:bg-midnight border border-pine/10 dark:border-midnight rounded-xl transition-all duration-200',
+    'hover:border-jungle/50 dark:hover:border-mint/30 hover:shadow-lg hover:-translate-y-0.5',
+    compact ? 'p-4' : 'p-6',
+  ]}
+>
+  <!-- Top row: type badge + date -->
+  <div class="flex items-center justify-between gap-3 mb-3">
+    <span class:list={['inline-flex text-xs font-semibold px-2.5 py-1 rounded-full', cfg.classes]}>
+      {cfg.label}
+    </span>
+    <time
+      datetime={date.toISOString()}
+      class="text-xs text-pine/50 dark:text-fog/40 whitespace-nowrap"
+    >
+      {dateLabel}
+    </time>
+  </div>
+
+  <!-- Event name -->
+  <p class="text-xs font-semibold uppercase tracking-wide text-jungle dark:text-mint mb-2">
+    {event}
+  </p>
+
+  <!-- Title -->
+  <h3
+    class:list={[
+      'font-display font-semibold text-pine dark:text-fog group-hover:text-jungle dark:group-hover:text-mint transition-colors leading-snug',
+      compact ? 'text-base mb-3' : 'text-lg mb-4',
+    ]}
+  >
+    <a href={`/talks/${slug}`} class="stretched-link">{title}</a>
+  </h3>
+
+  <!-- Tags -->
+  {tags.length > 0 && (
+    <div class="flex flex-wrap gap-1.5 mb-4">
+      {tags.slice(0, compact ? 3 : tags.length).map(tag => (
+        <a
+          href={`/topics/${encodeURIComponent(tag)}`}
+          class="text-xs bg-mint/15 dark:bg-pine/60 text-pine/70 dark:text-mint/80 px-2 py-0.5 rounded-full border border-mint/20 dark:border-mint/15 hover:bg-mint/30 dark:hover:bg-pine/80 transition-colors"
+        >
+          {tag}
+        </a>
+      ))}
+    </div>
+  )}
+
+  <!-- Actions -->
+  <div class="mt-auto flex items-center gap-4 text-sm">
+    <a
+      href={`/talks/${slug}`}
+      class="font-medium text-jungle dark:text-mint hover:underline underline-offset-2"
+    >
+      Details →
+    </a>
+    {slides_url && (
+      <a
+        href={slides_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-pine/45 dark:text-fog/45 hover:text-jungle dark:hover:text-mint transition-colors"
+      >
+        Slides ↗
+      </a>
+    )}
+    {video_url && (
+      <a
+        href={video_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-pine/45 dark:text-fog/45 hover:text-jungle dark:hover:text-mint transition-colors"
+      >
+        {videoLabel}
+      </a>
+    )}
+  </div>
+</article>

@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { readingTime } from '../../lib/reading-time';
+import { META } from '../../config/content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<Layout
+  title={META.blog.title}
+  description={META.blog.description}
+>
+
+  <!-- Header -->
+  <section class="bg-gradient-to-br from-pine to-jungle py-16 sm:py-20">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-mint text-xs font-semibold tracking-[0.2em] uppercase mb-3">Writing</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-bold text-white mb-4">Blog</h1>
+      <p class="text-fog/65 text-lg">
+        Thoughts on Kubernetes, cloud-native security, platform engineering, and open source.
+      </p>
+    </div>
+  </section>
+
+  <!-- Post list -->
+  <section class="py-14 bg-white dark:bg-pine min-h-screen">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      {posts.length === 0 ? (
+        <p class="text-center text-pine/40 dark:text-fog/40 py-16">No posts yet — check back soon.</p>
+      ) : (
+        <ol class="space-y-px">
+          {posts.map((post, i) => {
+            const mins = readingTime(post.body);
+            const dateLabel = post.data.date.toLocaleDateString('en-GB', {
+              day: 'numeric', month: 'long', year: 'numeric',
+            });
+            return (
+              <li>
+                {i > 0 && <div class="border-t border-pine/8 dark:border-mint/8" />}
+                <a
+                  href={`/blog/${post.id}`}
+                  class="group flex flex-col sm:flex-row sm:items-start gap-4 py-8 hover:bg-fog/30 dark:hover:bg-midnight/30 -mx-4 px-4 rounded-xl transition-colors"
+                >
+                  <!-- Date column -->
+                  <time
+                    datetime={post.data.date.toISOString()}
+                    class="shrink-0 text-sm text-pine/40 dark:text-fog/40 sm:w-36 sm:pt-0.5"
+                  >
+                    {dateLabel}
+                  </time>
+
+                  <!-- Content column -->
+                  <div class="flex-1 min-w-0">
+                    <h2 class="font-display font-semibold text-lg text-pine dark:text-fog group-hover:text-jungle dark:group-hover:text-mint transition-colors leading-snug mb-1">
+                      {post.data.title}
+                    </h2>
+
+                    {post.data.description && (
+                      <p class="text-pine/60 dark:text-fog/60 text-sm leading-relaxed mb-3 line-clamp-2">
+                        {post.data.description}
+                      </p>
+                    )}
+
+                    <div class="flex flex-wrap items-center gap-3">
+                      <!-- Reading time -->
+                      <span class="flex items-center gap-1 text-xs text-pine/40 dark:text-fog/40">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        {mins} min read
+                      </span>
+
+                      <!-- Tags -->
+                      {post.data.tags.slice(0, 3).map(tag => (
+                        <span class="text-xs bg-mint/10 text-mint/80 dark:text-mint/70 px-2 py-0.5 rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <!-- Arrow -->
+                  <span class="hidden sm:flex shrink-0 items-center self-center text-pine/20 dark:text-fog/20 group-hover:text-jungle dark:group-hover:text-mint transition-colors">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                    </svg>
+                  </span>
+                </a>
+              </li>
+            );
+          })}
+        </ol>
+      )}
+
+    </div>
+  </section>
+
+</Layout>

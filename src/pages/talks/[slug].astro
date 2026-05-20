@@ -1,0 +1,260 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { TYPE_CONFIG } from '../../config/talks';
+import SpeakingCtaCard from '../../components/SpeakingCtaCard.astro';
+import { CTA } from '../../config/content';
+
+export async function getStaticPaths() {
+  const talks = await getCollection('talks');
+  return talks.map(talk => ({ params: { slug: talk.id } }));
+}
+
+const { slug } = Astro.params;
+const talk = await getEntry('talks', slug!);
+if (!talk) return Astro.redirect('/talks');
+
+const { Content } = await render(talk);
+
+const allTalks = await getCollection('talks');
+const related = allTalks
+  .filter(t => t.id !== slug && t.data.tags.some(tag => talk.data.tags.includes(tag)))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+
+const cfg = TYPE_CONFIG[talk.data.type];
+const dateLabel = talk.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const endDateLabel = talk.data.endDate?.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const recordingLabel =
+  talk.data.type === 'podcast' ? '🎙 Listen to Episode' :
+  talk.data.type === 'webinar' ? '▶ Watch Webinar' :
+  '▶ Watch Recording';
+
+const recordingSectionLabel =
+  talk.data.type === 'podcast' ? 'Episode' :
+  talk.data.type === 'webinar' ? 'Webinar Recording' :
+  'Recording';
+
+// JSON-LD structured data (Event schema)
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Event',
+  name: talk.data.title,
+  description: talk.data.title,
+  startDate: talk.data.date.toISOString(),
+  ...(talk.data.endDate && { endDate: talk.data.endDate.toISOString() }),
+  eventStatus: 'https://schema.org/EventScheduled',
+  eventAttendanceMode: ['webinar', 'podcast'].includes(talk.data.type)
+    ? 'https://schema.org/OnlineEventAttendanceMode'
+    : 'https://schema.org/OfflineEventAttendanceMode',
+  organizer: { '@type': 'Organization', name: talk.data.event },
+  performer: {
+    '@type': 'Person',
+    name: 'Jeroen van Erp',
+    url: 'https://hierynomus.com',
+  },
+  ...(talk.data.conference_url && { url: talk.data.conference_url }),
+};
+---
+
+<Layout title={talk.data.title} description={`${talk.data.title} — ${talk.data.event}`} ogImage={`/og/talks/${talk.id}.png`}>
+
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
+
+  <!-- Header -->
+  <section class="relative overflow-hidden bg-gradient-to-br from-pine to-jungle pt-16 pb-12 sm:pt-20">
+
+    {/* Background image (when present) — diagonal split matching the OG image style */}
+    {talk.data.image && (
+      <div class="absolute inset-0 hidden lg:block">
+        {/* Image panel — occupies only the right portion, from the diagonal to the right edge */}
+        <div
+          class="absolute top-0 bottom-0 right-0"
+          style={`left: 48%; background-image: url('${talk.data.image}'); background-size: cover; background-position: center;`}
+        ></div>
+        {/* Pine trapezoid: top-left (0,0) → (63%,0) → (50%,100%) → (0,100%) */}
+        <div
+          class="absolute inset-0"
+          style="background-color: #0c322c; clip-path: polygon(0 0, 63% 0, 50% 100%, 0 100%);"
+        ></div>
+        {/* Soft feather along the diagonal edge */}
+        <div
+          class="absolute inset-0"
+          style="background: linear-gradient(100deg, transparent 44%, rgba(12,50,44,0.55) 52%, transparent 62%);"
+        ></div>
+      </div>
+    )}
+
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <a
+        href="/talks"
+        class="inline-flex items-center gap-1.5 text-mint/70 hover:text-mint text-sm mb-8 transition-colors"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+        All Talks
+      </a>
+
+      <div class="flex items-center gap-3 mb-4">
+        <span class:list={['inline-flex text-xs font-semibold px-2.5 py-1 rounded-full', cfg.classes]}>
+          {cfg.label}
+        </span>
+        <time datetime={talk.data.date.toISOString()} class="text-fog/50 text-sm">
+          {dateLabel}{endDateLabel ? ` – ${endDateLabel}` : ''}
+        </time>
+      </div>
+
+      <p class="text-xs font-semibold tracking-[0.2em] uppercase text-mint mb-3">
+        {talk.data.event}
+      </p>
+      <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-6">
+        {talk.data.title}
+      </h1>
+
+      {talk.data.tags.length > 0 && (
+        <div class="flex flex-wrap gap-2">
+          {talk.data.tags.map(tag => (
+            <a href={`/topics/${encodeURIComponent(tag)}`} class="text-xs bg-mint/10 hover:bg-mint/20 text-mint/80 border border-mint/20 px-2.5 py-1 rounded-full transition-colors">
+              {tag}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Content -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+      <!-- Main: abstract -->
+      <div class="lg:col-span-2">
+        <h2 class="font-display font-semibold text-xl text-pine dark:text-fog mb-5">Abstract</h2>
+        <div class="prose prose-pine dark:prose-invert max-w-none text-pine/80 dark:text-fog/75 leading-relaxed [&>p]:mb-4 [&>ul]:space-y-2 [&>ul]:list-disc [&>ul]:pl-5 [&>h2]:font-display [&>h2]:font-semibold [&>h2]:text-pine [&>h2]:dark:text-fog [&>h2]:mt-8 [&>h2]:mb-3 [&>strong]:text-pine [&>strong]:dark:text-fog">
+          <Content />
+        </div>
+
+        <!-- Resources placeholders -->
+        <div class="mt-10 space-y-4">
+          {talk.data.video_url ? (
+            <div>
+              <h3 class="font-display font-semibold text-pine dark:text-fog mb-3">{recordingSectionLabel}</h3>
+              <a href={talk.data.video_url} target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 bg-jungle/10 dark:bg-mint/10 hover:bg-jungle/20 dark:hover:bg-mint/20 text-jungle dark:text-mint font-medium px-4 py-2.5 rounded-lg transition-colors">
+                {recordingLabel}
+              </a>
+            </div>
+          ) : (
+            <div class="rounded-xl border-2 border-dashed border-pine/10 dark:border-mint/10 p-6 text-center">
+              <p class="text-sm text-pine/40 dark:text-fog/40">Recording not yet available</p>
+            </div>
+          )}
+
+          {talk.data.type !== 'podcast' && (
+            talk.data.slides_url ? (
+              <div>
+                <h3 class="font-display font-semibold text-pine dark:text-fog mb-3">Slides</h3>
+                <a href={talk.data.slides_url} target="_blank" rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 bg-jungle/10 dark:bg-mint/10 hover:bg-jungle/20 dark:hover:bg-mint/20 text-jungle dark:text-mint font-medium px-4 py-2.5 rounded-lg transition-colors">
+                  View Slides ↗
+                </a>
+              </div>
+            ) : (
+              <div class="rounded-xl border-2 border-dashed border-pine/10 dark:border-mint/10 p-6 text-center">
+                <p class="text-sm text-pine/40 dark:text-fog/40">Slides not yet available</p>
+              </div>
+            )
+          )}
+        </div>
+      </div>
+
+      <!-- Sidebar: event info -->
+      <aside class="space-y-6">
+        <div class="bg-fog/60 dark:bg-midnight/60 rounded-xl p-5 space-y-4">
+          <h3 class="font-display font-semibold text-pine dark:text-fog text-sm uppercase tracking-wide">Event Details</h3>
+
+          <div>
+            <p class="text-xs text-pine/50 dark:text-fog/50 mb-1">Event</p>
+            <p class="font-medium text-pine dark:text-fog text-sm">{talk.data.event}</p>
+          </div>
+
+          <div>
+            <p class="text-xs text-pine/50 dark:text-fog/50 mb-1">Date</p>
+            <p class="font-medium text-pine dark:text-fog text-sm">
+              {dateLabel}{endDateLabel ? ` – ${endDateLabel}` : ''}
+            </p>
+          </div>
+
+          <div>
+            <p class="text-xs text-pine/50 dark:text-fog/50 mb-1">Format</p>
+            <span class:list={['inline-flex text-xs font-semibold px-2 py-0.5 rounded-full', cfg.classes]}>
+              {cfg.label}
+            </span>
+          </div>
+
+          {talk.data.co_presenters.length > 0 && (
+            <div>
+              <p class="text-xs text-pine/50 dark:text-fog/50 mb-1">
+                {talk.data.co_presenters.length === 1 ? 'Co-presenter' : 'Co-presenters'}
+              </p>
+              <ul class="space-y-1">
+                {talk.data.co_presenters.map(person => (
+                  <li class="font-medium text-pine dark:text-fog text-sm">
+                    {person.url
+                      ? <a href={person.url} target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-2 text-jungle dark:text-mint">{person.name}</a>
+                      : person.name
+                    }
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {talk.data.conference_url && (
+            <a
+              href={talk.data.conference_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 text-sm text-jungle dark:text-mint hover:underline underline-offset-2 font-medium"
+            >
+              Event website ↗
+            </a>
+          )}
+        </div>
+
+        <!-- Speaking CTA (only for bookable talks) -->
+        {talk.data.bookable && (
+          <SpeakingCtaCard
+            heading={CTA.talk.heading}
+            subtext={CTA.talk.subtext}
+          />
+        )}
+      </aside>
+
+    </div>
+
+    <!-- Related talks -->
+    {related.length > 0 && (
+      <div class="mt-16 pt-10 border-t border-pine/10 dark:border-mint/10">
+        <h2 class="font-display font-semibold text-2xl text-pine dark:text-fog mb-6">Related Talks</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {related.map(t => (
+            <a
+              href={`/talks/${t.id}`}
+              class="group block p-4 rounded-xl border border-pine/10 dark:border-mint/10 hover:border-jungle/40 dark:hover:border-mint/30 hover:shadow-md transition-all"
+            >
+              <p class="text-xs font-semibold uppercase tracking-wide text-jungle dark:text-mint mb-1">{t.data.event}</p>
+              <p class="font-display font-semibold text-pine dark:text-fog group-hover:text-jungle dark:group-hover:text-mint transition-colors text-sm leading-snug">
+                {t.data.title}
+              </p>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+
+  </div>
+</Layout>

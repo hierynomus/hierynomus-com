@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hierynomus.com/sitemap-index.xml

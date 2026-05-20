@@ -1,0 +1,124 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { readingTime } from '../../lib/reading-time';
+import SpeakingCtaCard from '../../components/SpeakingCtaCard.astro';
+import { CTA } from '../../config/content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map(post => ({ params: { slug: post.id } }));
+}
+
+const { slug } = Astro.params;
+const post = await getEntry('blog', slug!);
+if (!post) return Astro.redirect('/writing');
+
+const { Content } = await render(post);
+
+const dateLabel = post.data.date.toLocaleDateString('en-GB', {
+  day: 'numeric', month: 'long', year: 'numeric',
+});
+---
+
+<Layout title={post.data.title} description={post.data.description} ogImage={`/og/blog/${post.id}.png`}>
+
+  <!-- Header -->
+  <section class="bg-gradient-to-br from-pine to-jungle pt-16 pb-12 sm:pt-20">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <a
+        href="/blog"
+        class="inline-flex items-center gap-1.5 text-white/60 hover:text-white text-sm mb-8 transition-colors"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+        All Posts
+      </a>
+
+      <div class="flex items-center gap-3 mb-3">
+        <time datetime={post.data.date.toISOString()} class="text-white/60 text-sm">
+          {dateLabel}
+        </time>
+        <span class="text-white/40 text-sm flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" />
+          </svg>
+          {readingTime(post.body)} min read
+        </span>
+      </div>
+
+      <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-6">
+        {post.data.title}
+      </h1>
+
+      <p class="text-white/70 text-lg leading-relaxed mb-6">
+        {post.data.description}
+      </p>
+
+      {post.data.tags.length > 0 && (
+        <div class="flex flex-wrap gap-2">
+          {post.data.tags.map(tag => (
+            <span class="text-xs bg-white/10 text-white/80 border border-white/20 px-2.5 py-1 rounded-full">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Content -->
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-12 items-start">
+
+      <!-- Post body -->
+      <div class="
+        prose max-w-none
+        prose-headings:font-display prose-headings:font-semibold
+        prose-headings:text-pine dark:prose-headings:text-fog
+        prose-p:text-pine/80 dark:prose-p:text-fog/75
+        prose-p:leading-relaxed
+        prose-a:text-jungle dark:prose-a:text-mint prose-a:no-underline hover:prose-a:underline
+        prose-strong:text-pine dark:prose-strong:text-fog
+        prose-code:text-pine dark:prose-code:text-mint
+        prose-code:bg-fog dark:prose-code:bg-midnight/60
+        prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal
+        prose-pre:bg-pine dark:prose-pre:bg-midnight/80
+        prose-pre:border prose-pre:border-pine/20 dark:prose-pre:border-mint/10
+        prose-blockquote:border-jungle dark:prose-blockquote:border-mint
+        prose-blockquote:text-pine/70 dark:prose-blockquote:text-fog/60
+        prose-li:text-pine/80 dark:prose-li:text-fog/75
+        prose-hr:border-pine/10 dark:prose-hr:border-mint/10
+      ">
+        <Content />
+      </div>
+
+      <!-- Sticky sidebar -->
+      <aside class="hidden lg:block space-y-5 sticky top-24">
+        <!-- Speaking CTA -->
+        <SpeakingCtaCard
+          heading={CTA.blog.heading}
+          subtext={CTA.blog.subtext}
+        />
+
+        <!-- Tags -->
+        {post.data.tags.length > 0 && (
+          <div class="bg-fog/60 dark:bg-midnight/60 rounded-xl p-4">
+            <p class="text-xs font-semibold uppercase tracking-wide text-pine/50 dark:text-fog/50 mb-3">Tags</p>
+            <div class="flex flex-wrap gap-1.5">
+              {post.data.tags.map(tag => (
+                <span class="text-xs bg-mint/15 dark:bg-pine/60 text-pine/70 dark:text-mint/80 px-2 py-0.5 rounded-full border border-mint/20 dark:border-mint/15">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </aside>
+
+    </div>
+  </div>
+
+</Layout>

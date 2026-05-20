@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <radialGradient id="bg" cx="70%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#0e2a4a"/>
+      <stop offset="100%" stop-color="#040d1a"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#30ba78" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#30ba78" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Hexagonal grid pattern -->
+  <g opacity="0.12" stroke="#90ebcd" stroke-width="1" fill="none">
+    <!-- Row 1 -->
+    <polygon points="660,40 700,63 700,110 660,133 620,110 620,63"/>
+    <polygon points="740,40 780,63 780,110 740,133 700,110 700,63"/>
+    <polygon points="820,40 860,63 860,110 820,133 780,110 780,63"/>
+    <polygon points="900,40 940,63 940,110 900,133 860,110 860,63"/>
+    <polygon points="980,40 1020,63 1020,110 980,133 940,110 940,63"/>
+    <polygon points="1060,40 1100,63 1100,110 1060,133 1020,110 1020,63"/>
+    <polygon points="1140,40 1180,63 1180,110 1140,133 1100,110 1100,63"/>
+    <!-- Row 2 -->
+    <polygon points="700,133 740,156 740,203 700,226 660,203 660,156"/>
+    <polygon points="780,133 820,156 820,203 780,226 740,203 740,156"/>
+    <polygon points="860,133 900,156 900,203 860,226 820,203 820,156"/>
+    <polygon points="940,133 980,156 980,203 940,226 900,203 900,156"/>
+    <polygon points="1020,133 1060,156 1060,203 1020,226 980,203 980,156"/>
+    <polygon points="1100,133 1140,156 1140,203 1100,226 1060,203 1060,156"/>
+    <!-- Row 3 -->
+    <polygon points="660,226 700,249 700,296 660,319 620,296 620,249"/>
+    <polygon points="740,226 780,249 780,296 740,319 700,296 700,249"/>
+    <polygon points="820,226 860,249 860,296 820,319 780,296 780,249"/>
+    <polygon points="900,226 940,249 940,296 900,319 860,296 860,249"/>
+    <polygon points="980,226 1020,249 1020,296 980,319 940,296 940,249"/>
+    <polygon points="1060,226 1100,249 1100,296 1060,319 1020,296 1020,249"/>
+    <polygon points="1140,226 1180,249 1180,296 1140,319 1100,296 1100,249"/>
+    <!-- Row 4 -->
+    <polygon points="700,319 740,342 740,389 700,412 660,389 660,342"/>
+    <polygon points="780,319 820,342 820,389 780,412 740,389 740,342"/>
+    <polygon points="860,319 900,342 900,389 860,412 820,389 820,342"/>
+    <polygon points="940,319 980,342 980,389 940,412 900,389 900,342"/>
+    <polygon points="1020,319 1060,342 1060,389 1020,412 980,389 980,342"/>
+    <polygon points="1100,319 1140,342 1140,389 1100,412 1060,389 1060,342"/>
+    <!-- Row 5 -->
+    <polygon points="660,412 700,435 700,482 660,505 620,482 620,435"/>
+    <polygon points="740,412 780,435 780,482 740,505 700,482 700,435"/>
+    <polygon points="820,412 860,435 860,482 820,505 780,482 780,435"/>
+    <polygon points="900,412 940,435 940,482 900,505 860,482 860,435"/>
+    <polygon points="980,412 1020,435 1020,482 980,505 940,482 940,435"/>
+    <polygon points="1060,412 1100,435 1100,482 1060,505 1020,482 1020,435"/>
+  </g>
+
+  <!-- Highlighted hexagons -->
+  <polygon points="860,133 900,156 900,203 860,226 820,203 820,156" fill="#30ba78" opacity="0.18" stroke="#30ba78" stroke-width="1.5"/>
+  <polygon points="940,226 980,249 980,296 940,319 900,296 900,249" fill="#30ba78" opacity="0.12" stroke="#30ba78" stroke-width="1.5"/>
+  <polygon points="1020,133 1060,156 1060,203 1020,226 980,203 980,156" fill="#90ebcd" opacity="0.08" stroke="#90ebcd" stroke-width="1"/>
+
+  <!-- Central glow -->
+  <ellipse cx="920" cy="315" rx="280" ry="220" fill="url(#glow)"/>
+
+  <!-- Shield icon (security theme) -->
+  <g transform="translate(870, 210)" opacity="0.22">
+    <path d="M50 0 L95 20 L95 55 C95 80 74 100 50 110 C26 100 5 80 5 55 L5 20 Z" fill="none" stroke="#90ebcd" stroke-width="3"/>
+    <path d="M50 0 L95 20 L95 55 C95 80 74 100 50 110 C26 100 5 80 5 55 L5 20 Z" fill="#90ebcd" opacity="0.1"/>
+    <path d="M30 55 L44 70 L72 42" fill="none" stroke="#90ebcd" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Connecting lines between nodes -->
+  <g opacity="0.15" stroke="#90ebcd" stroke-width="1">
+    <line x1="860" y1="180" x2="940" y2="270"/>
+    <line x1="940" y1="270" x2="1020" y2="180"/>
+    <line x1="1020" y1="180" x2="1100" y2="270"/>
+    <line x1="940" y1="270" x2="940" y2="390"/>
+  </g>
+  <!-- Node dots -->
+  <g fill="#90ebcd" opacity="0.4">
+    <circle cx="860" cy="180" r="5"/>
+    <circle cx="940" cy="270" r="7"/>
+    <circle cx="1020" cy="180" r="5"/>
+    <circle cx="1100" cy="270" r="4"/>
+    <circle cx="940" cy="390" r="4"/>
+  </g>
+
+  <!-- Light ray from top-right -->
+  <linearGradient id="ray" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#2453ff" stop-opacity="0.2"/>
+    <stop offset="100%" stop-color="#2453ff" stop-opacity="0"/>
+  </linearGradient>
+  <polygon points="1200,0 1200,300 900,0" fill="url(#ray)"/>
+</svg>

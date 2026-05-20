@@ -1,0 +1,24 @@
+---
+import { CTA } from '../config/content';
+
+interface Props {
+  heading?: string;
+  subtext?: string;
+}
+
+const {
+  heading = CTA.talk.heading,
+  subtext = CTA.talk.subtext,
+} = Astro.props;
+---
+
+<div class="bg-gradient-to-br from-pine to-jungle rounded-xl p-5 text-center">
+  <p class="text-white font-display font-semibold text-sm mb-2">{heading}</p>
+  <p class="text-fog/60 text-xs mb-4 leading-relaxed">{subtext}</p>
+  <a
+    href="/#contact"
+    class="inline-flex w-full justify-center items-center gap-2 bg-persimmon hover:bg-persimmon/90 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors"
+  >
+    Get in Touch
+  </a>
+</div>

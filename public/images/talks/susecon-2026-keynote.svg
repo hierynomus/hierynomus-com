@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <radialGradient id="bg2" cx="60%" cy="40%" r="90%">
+      <stop offset="0%" stop-color="#1a4a3a"/>
+      <stop offset="60%" stop-color="#0c322c"/>
+      <stop offset="100%" stop-color="#061a16"/>
+    </radialGradient>
+    <radialGradient id="ring-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#90ebcd" stop-opacity="0.15"/>
+      <stop offset="70%" stop-color="#30ba78" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#30ba78" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="center-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#90ebcd" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#90ebcd" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg2)"/>
+
+  <!-- Dot grid -->
+  <g opacity="0.06" fill="#90ebcd">
+    <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="20" cy="20" r="1.5"/>
+    </pattern>
+    <rect width="1200" height="630" fill="url(#dots)"/>
+  </g>
+
+  <!-- Outer decorative rings -->
+  <circle cx="900" cy="315" r="280" fill="none" stroke="#30ba78" stroke-width="1" opacity="0.15"/>
+  <circle cx="900" cy="315" r="220" fill="none" stroke="#30ba78" stroke-width="1" opacity="0.2"/>
+  <circle cx="900" cy="315" r="160" fill="none" stroke="#90ebcd" stroke-width="1.5" opacity="0.2"/>
+  <circle cx="900" cy="315" r="100" fill="none" stroke="#90ebcd" stroke-width="2" opacity="0.25"/>
+
+  <!-- Ring glow fill -->
+  <circle cx="900" cy="315" r="280" fill="url(#ring-glow)"/>
+
+  <!-- Radial spokes -->
+  <g opacity="0.1" stroke="#90ebcd" stroke-width="1">
+    <line x1="900" y1="315" x2="900" y2="35"/>
+    <line x1="900" y1="315" x2="1143" y2="175"/>
+    <line x1="900" y1="315" x2="1143" y2="455"/>
+    <line x1="900" y1="315" x2="900" y2="595"/>
+    <line x1="900" y1="315" x2="657" y2="455"/>
+    <line x1="900" y1="315" x2="657" y2="175"/>
+  </g>
+
+  <!-- Center star/burst -->
+  <circle cx="900" cy="315" r="12" fill="#90ebcd" opacity="0.6"/>
+  <circle cx="900" cy="315" r="6" fill="#90ebcd" opacity="0.9"/>
+  <circle cx="900" cy="315" r="55" fill="url(#center-glow)"/>
+
+  <!-- Dots on rings -->
+  <g fill="#90ebcd">
+    <circle cx="900" cy="155" r="4" opacity="0.5"/>
+    <circle cx="1060" cy="235" r="4" opacity="0.5"/>
+    <circle cx="1060" cy="395" r="4" opacity="0.5"/>
+    <circle cx="900" cy="475" r="4" opacity="0.5"/>
+    <circle cx="740" cy="395" r="4" opacity="0.5"/>
+    <circle cx="740" cy="235" r="4" opacity="0.5"/>
+    <!-- Inner ring dots -->
+    <circle cx="900" cy="215" r="3" opacity="0.4"/>
+    <circle cx="1015" cy="262" r="3" opacity="0.4"/>
+    <circle cx="1015" cy="368" r="3" opacity="0.4"/>
+    <circle cx="900" cy="415" r="3" opacity="0.4"/>
+    <circle cx="785" cy="368" r="3" opacity="0.4"/>
+    <circle cx="785" cy="262" r="3" opacity="0.4"/>
+  </g>
+
+  <!-- Horizontal light streak -->
+  <linearGradient id="streak" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#90ebcd" stop-opacity="0"/>
+    <stop offset="40%" stop-color="#90ebcd" stop-opacity="0.12"/>
+    <stop offset="60%" stop-color="#90ebcd" stop-opacity="0.18"/>
+    <stop offset="100%" stop-color="#90ebcd" stop-opacity="0"/>
+  </linearGradient>
+  <rect x="600" y="308" width="600" height="2" fill="url(#streak)"/>
+  <rect x="600" y="318" width="600" height="1" fill="url(#streak)" opacity="0.5"/>
+
+  <!-- Top-right accent -->
+  <linearGradient id="corner" x1="100%" y1="0%" x2="70%" y2="30%">
+    <stop offset="0%" stop-color="#fe7c3f" stop-opacity="0.25"/>
+    <stop offset="100%" stop-color="#fe7c3f" stop-opacity="0"/>
+  </linearGradient>
+  <polygon points="1200,0 1200,200 1000,0" fill="url(#corner)"/>
+</svg>

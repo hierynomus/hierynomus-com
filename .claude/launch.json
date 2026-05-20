@@ -1,0 +1,35 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "mise",
+      "runtimeArgs": [
+        "exec",
+        "--",
+        "npm",
+        "run",
+        "dev",
+        "--",
+        "--host"
+      ],
+      "port": 4321
+    },
+    {
+      "name": "preview",
+      "runtimeExecutable": "mise",
+      "runtimeArgs": [
+        "exec",
+        "--",
+        "npm",
+        "run",
+        "preview",
+        "--",
+        "--host",
+        "--port",
+        "4322"
+      ],
+      "port": 4322
+    }
+  ]
+}

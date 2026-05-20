@@ -1,0 +1,61 @@
+---
+import { SOCIAL, SITE } from '../config/site';
+
+const year = new Date().getFullYear();
+
+const links = [
+  { href: SOCIAL.github, label: 'GitHub', external: true },
+  { href: SOCIAL.linkedin, label: 'LinkedIn', external: true },
+  { href: '/talks', label: 'Talks' },
+];
+---
+
+<!-- Speaking CTA bar -->
+<div class="bg-pine dark:bg-midnight border-t border-mint/10">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <p class="text-fog/70 text-sm">
+      Available to speak at your conference or meetup.
+    </p>
+    <a
+      href={`mailto:${SITE.email}`}
+      class="flex-shrink-0 bg-persimmon hover:bg-persimmon/90 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+    >
+      Get in Touch
+    </a>
+  </div>
+</div>
+
+<footer class="border-t border-pine/10 dark:border-mint/10 bg-fog/50 dark:bg-midnight/40">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-6">
+
+      <!-- Brand -->
+      <div>
+        <p class="font-display font-semibold text-pine dark:text-fog">Jeroen van Erp</p>
+        <p class="text-sm text-pine/50 dark:text-fog/50 mt-0.5">Technology Advocate · Cloud Native Speaker · @ SUSE</p>
+      </div>
+
+      <!-- Links -->
+      <nav class="flex items-center gap-6">
+        {links.map(link => (
+          <a
+            href={link.href}
+            target={link.external ? '_blank' : undefined}
+            rel={link.external ? 'noopener noreferrer' : undefined}
+            class="text-sm text-pine/60 dark:text-fog/60 hover:text-jungle dark:hover:text-mint transition-colors"
+          >
+            {link.label}{link.external ? ' ↗' : ''}
+          </a>
+        ))}
+      </nav>
+    </div>
+
+    <div class="mt-8 pt-6 border-t border-pine/10 dark:border-mint/10 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-pine/40 dark:text-fog/40">
+      <span>© {year} Jeroen van Erp. All rights reserved.</span>
+      <span>
+        Built with <a href="https://astro.build" target="_blank" rel="noopener" class="hover:text-jungle dark:hover:text-mint transition-colors">Astro</a>
+        {' '}· Hosted on <a href="https://pages.cloudflare.com" target="_blank" rel="noopener" class="hover:text-jungle dark:hover:text-mint transition-colors">Cloudflare Pages</a>
+      </span>
+    </div>
+  </div>
+</footer>

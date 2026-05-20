@@ -1,0 +1,110 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { readingTime } from '../../lib/reading-time';
+import { META } from '../../config/content';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+const sortedPosts = posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const articles = await getCollection('writing');
+const sortedArticles = articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<Layout
+  title={META.writing.title}
+  description={META.writing.description}
+>
+
+  <!-- Header -->
+  <section class="bg-gradient-to-br from-pine to-jungle py-16 sm:py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-white/70 text-xs font-semibold tracking-[0.2em] uppercase mb-3">Writing</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-bold text-white mb-4">Writing</h1>
+      <p class="text-white/65 text-lg max-w-2xl">
+        Posts from this blog, plus articles published elsewhere on Kubernetes,
+        cloud-native security, platform engineering, and open source.
+      </p>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-20">
+
+    <!-- ── FROM THIS BLOG ── -->
+    <section>
+      <div class="flex items-end justify-between mb-8">
+        <div>
+          <p class="text-xs font-semibold tracking-[0.2em] uppercase text-jungle dark:text-mint mb-1">On this site</p>
+          <h2 class="font-display text-2xl sm:text-3xl font-bold text-pine dark:text-fog">From the Blog</h2>
+        </div>
+      </div>
+
+      {sortedPosts.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sortedPosts.map(post => (
+            <BlogCard
+              title={post.data.title}
+              date={post.data.date}
+              description={post.data.description}
+              tags={post.data.tags}
+              slug={post.id}
+              readingTime={readingTime(post.body)}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="rounded-xl border-2 border-dashed border-pine/10 dark:border-mint/10 p-12 text-center">
+          <p class="text-pine/40 dark:text-fog/40 text-sm">First post coming soon.</p>
+        </div>
+      )}
+    </section>
+
+    <!-- ── PUBLISHED ELSEWHERE ── -->
+    <section>
+      <div class="mb-8">
+        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-jungle dark:text-mint mb-1">External</p>
+        <h2 class="font-display text-2xl sm:text-3xl font-bold text-pine dark:text-fog">Published Elsewhere</h2>
+      </div>
+
+      <div class="space-y-4">
+        {sortedArticles.map(post => (
+          <a
+            href={post.data.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group flex flex-col sm:flex-row sm:items-start gap-4 bg-white dark:bg-midnight border border-pine/10 dark:border-midnight rounded-xl p-5 hover:border-jungle/50 dark:hover:border-mint/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
+          >
+            <div class="flex-shrink-0 sm:w-44">
+              <time datetime={post.data.date.toISOString()} class="text-xs text-pine/45 dark:text-fog/40 block mb-1">
+                {post.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </time>
+              <span class="inline-flex text-xs font-semibold text-jungle dark:text-mint">
+                {post.data.publication}
+              </span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="font-display font-semibold text-pine dark:text-fog group-hover:text-jungle dark:group-hover:text-mint transition-colors leading-snug mb-2">
+                {post.data.title}
+              </h3>
+              <p class="text-sm text-pine/60 dark:text-fog/55 leading-relaxed mb-3">
+                {post.data.description}
+              </p>
+              <div class="flex flex-wrap gap-1.5">
+                {post.data.tags.slice(0, 4).map(tag => (
+                  <span class="text-xs bg-mint/15 dark:bg-pine/60 text-pine/70 dark:text-mint/80 px-2 py-0.5 rounded-full border border-mint/20 dark:border-mint/15">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <svg class="flex-shrink-0 w-4 h-4 text-pine/30 dark:text-fog/30 group-hover:text-jungle dark:group-hover:text-mint transition-colors self-center hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+        ))}
+      </div>
+    </section>
+
+  </div>
+</Layout>

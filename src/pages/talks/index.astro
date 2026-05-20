@@ -1,0 +1,144 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import TalkCard from '../../components/TalkCard.astro';
+import { TYPE_CONFIG } from '../../config/talks';
+import { META } from '../../config/content';
+
+const allTalks = await getCollection('talks');
+const sorted = allTalks.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+// Group by year, newest first
+const byYear = sorted.reduce<Record<number, typeof sorted>>((acc, talk) => {
+  const year = talk.data.date.getFullYear();
+  (acc[year] ??= []).push(talk);
+  return acc;
+}, {});
+const yearGroups = Object.entries(byYear)
+  .sort(([a], [b]) => Number(b) - Number(a))
+  .map(([year, talks]) => ({ year: Number(year), talks }));
+
+const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[];
+---
+
+<Layout
+  title={META.talks.title}
+  description={META.talks.description}
+>
+
+  <!-- Header -->
+  <section class="bg-gradient-to-br from-pine to-jungle py-16 sm:py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-mint text-xs font-semibold tracking-[0.2em] uppercase mb-3">Speaking history</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-bold text-white mb-4">All Talks</h1>
+      <p class="text-fog/65 text-lg max-w-2xl">
+        Keynotes, conference talks, webinars, and podcast appearances — a full record of
+        where I've spoken and what I've covered.
+      </p>
+    </div>
+  </section>
+
+  <!-- Filter + Grid -->
+  <section class="py-14 bg-white dark:bg-pine min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Filter tabs -->
+      <div class="flex flex-wrap gap-2 mb-10" id="filter-tabs" role="tablist" aria-label="Filter talks by type">
+        {activeTypes.map(type => (
+          <button
+            role="tab"
+            data-type={type}
+            aria-selected={type === 'all' ? 'true' : 'false'}
+            class:list={[
+              'filter-tab px-4 py-1.5 rounded-full text-sm font-medium border transition-colors',
+              type === 'all'
+                ? 'bg-jungle text-white border-jungle'
+                : 'bg-white dark:bg-midnight text-pine/65 dark:text-fog/65 border-pine/15 dark:border-mint/15 hover:border-jungle/40 dark:hover:border-mint/40',
+            ]}
+          >
+            {type === 'all' ? 'All' : TYPE_CONFIG[type]?.label ?? type}
+          </button>
+        ))}
+      </div>
+
+      <!-- Year-grouped talks -->
+      <div id="talks-container">
+        {yearGroups.map(({ year, talks }) => (
+          <div class="year-section mb-14" data-year={year}>
+            <h2 class="year-heading font-display text-2xl font-bold text-pine/30 dark:text-fog/25 mb-6 tabular-nums">
+              {year}
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {talks.map(talk => (
+                <div data-talk-type={talk.data.type} class="talk-item">
+                  <TalkCard
+                    title={talk.data.title}
+                    event={talk.data.event}
+                    date={talk.data.date}
+                    endDate={talk.data.endDate}
+                    type={talk.data.type}
+                    tags={talk.data.tags}
+                    slug={talk.id}
+                    slides_url={talk.data.slides_url}
+                    video_url={talk.data.video_url}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Empty state -->
+      <p id="empty-state" class="hidden text-center text-pine/50 dark:text-fog/50 py-16 text-sm">
+        No talks of this type yet.
+      </p>
+
+    </div>
+  </section>
+
+</Layout>
+
+<script>
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.filter-tab');
+  const items = document.querySelectorAll<HTMLElement>('.talk-item');
+  const sections = document.querySelectorAll<HTMLElement>('.year-section');
+  const empty = document.getElementById('empty-state');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const type = tab.dataset.type!;
+
+      // Update tab styles
+      tabs.forEach(t => {
+        const active = t.dataset.type === type;
+        t.setAttribute('aria-selected', String(active));
+        t.classList.toggle('bg-jungle', active);
+        t.classList.toggle('text-white', active);
+        t.classList.toggle('border-jungle', active);
+        t.classList.toggle('bg-white', !active);
+        t.classList.toggle('dark:bg-midnight', !active);
+        t.classList.toggle('text-pine/65', !active);
+        t.classList.toggle('dark:text-fog/65', !active);
+        t.classList.toggle('border-pine/15', !active);
+        t.classList.toggle('dark:border-mint/15', !active);
+      });
+
+      // Show/hide talk cards
+      let totalVisible = 0;
+      items.forEach(item => {
+        const match = type === 'all' || item.dataset.talkType === type;
+        item.classList.toggle('hidden', !match);
+        if (match) totalVisible++;
+      });
+
+      // Hide year headings that have no visible talks
+      sections.forEach(section => {
+        const visibleInSection = section.querySelectorAll('.talk-item:not(.hidden)').length;
+        section.classList.toggle('hidden', visibleInSection === 0);
+      });
+
+      empty?.classList.toggle('hidden', totalVisible > 0);
+    });
+  });
+</script>

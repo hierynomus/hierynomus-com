@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c322c"/>
+      <stop offset="100%" stop-color="#192072"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#30ba78" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#30ba78" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="400" fill="url(#bg)"/>
+
+  <!-- Stage light glow from bottom -->
+  <ellipse cx="200" cy="420" rx="220" ry="140" fill="url(#glow)"/>
+
+  <!-- Subtle grid pattern -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#90ebcd" stroke-width="0.3" stroke-opacity="0.15"/>
+  </pattern>
+  <rect width="400" height="400" fill="url(#grid)"/>
+
+  <!-- Person silhouette — head -->
+  <circle cx="200" cy="148" r="62" fill="#192072" stroke="#90ebcd" stroke-width="1.5" stroke-opacity="0.4"/>
+
+  <!-- Person silhouette — shoulders/body -->
+  <path d="M 80 370 Q 80 280 200 280 Q 320 280 320 370 Z" fill="#192072" stroke="#90ebcd" stroke-width="1.5" stroke-opacity="0.4"/>
+
+  <!-- Monogram -->
+  <text
+    x="200"
+    y="162"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    font-family="'Space Grotesk', 'Inter', ui-sans-serif, system-ui, sans-serif"
+    font-size="44"
+    font-weight="700"
+    fill="#90ebcd"
+    letter-spacing="-1"
+  >JvE</text>
+
+  <!-- "Add photo" hint -->
+  <text
+    x="200"
+    y="340"
+    text-anchor="middle"
+    font-family="'Inter', ui-sans-serif, system-ui, sans-serif"
+    font-size="13"
+    fill="#efefef"
+    opacity="0.4"
+  >add headshot</text>
+</svg>

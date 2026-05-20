@@ -1,0 +1,72 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { META } from '../../config/content';
+
+const talks = await getCollection('talks');
+const writing = await getCollection('writing');
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+// Build a map of tag -> count
+const tagCounts = new Map<string, number>();
+
+for (const talk of talks) {
+  for (const tag of talk.data.tags) {
+    tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  }
+}
+for (const article of writing) {
+  for (const tag of article.data.tags) {
+    tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  }
+}
+for (const post of posts) {
+  for (const tag of post.data.tags) {
+    tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  }
+}
+
+const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
+---
+
+<Layout
+  title={META.topics.title}
+  description={META.topics.description}
+>
+
+  <!-- Header -->
+  <section class="bg-gradient-to-br from-pine to-jungle py-16 sm:py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-white/70 text-xs font-semibold tracking-[0.2em] uppercase mb-3">Browse</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-bold text-white mb-4">Topics</h1>
+      <p class="text-white/65 text-lg max-w-2xl">
+        All topics covered across talks, blog posts, and external writing.
+        Click any tag to explore related content.
+      </p>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+    {sortedTags.length > 0 ? (
+      <div class="flex flex-wrap gap-3">
+        {sortedTags.map(([tag, count]) => (
+          <a
+            href={`/topics/${encodeURIComponent(tag)}`}
+            class="group inline-flex items-center gap-2 bg-white dark:bg-midnight border border-pine/15 dark:border-mint/15 hover:border-jungle/50 dark:hover:border-mint/40 hover:shadow-md text-pine dark:text-fog hover:text-jungle dark:hover:text-mint px-4 py-2 rounded-full transition-all duration-200"
+          >
+            <span class="font-medium text-sm">{tag}</span>
+            <span class="text-xs bg-fog dark:bg-pine/60 text-pine/50 dark:text-fog/50 group-hover:bg-jungle/10 dark:group-hover:bg-mint/10 px-1.5 py-0.5 rounded-full tabular-nums">
+              {count}
+            </span>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="rounded-xl border-2 border-dashed border-pine/10 dark:border-mint/10 p-12 text-center">
+        <p class="text-pine/40 dark:text-fog/40 text-sm">No tags found yet.</p>
+      </div>
+    )}
+  </div>
+
+</Layout>

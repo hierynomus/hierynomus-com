@@ -1,0 +1,32 @@
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: Europe/Amsterdam
+    labels:
+      - dependencies
+
+  # npm
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: Europe/Amsterdam
+    labels:
+      - dependencies
+    ignore:
+      # Only accept patch updates for Astro and Tailwind to avoid
+      # unexpected breaking changes — review minor/major manually
+      - dependency-name: astro
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+      - dependency-name: tailwindcss
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+      - dependency-name: "@tailwindcss/vite"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
