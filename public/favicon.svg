@@ -11,7 +11,7 @@
     <rect x="9" y="2" width="14" height="19" rx="7" fill="#90ebcd"/>
     <!-- J in Inter / system sans-serif 800 -->
     <text
-      x="16" y="15"
+      x="16" y="16"
       font-family="Inter, 'Inter Variable', system-ui, -apple-system, sans-serif"
       font-weight="800"
       font-size="14"

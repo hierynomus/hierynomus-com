@@ -57,8 +57,6 @@ async function renderFavicon(size) {
           fontWeight: 800,
           fontSize: `${fontSize}px`,
           color: '#0c322c',
-          // shift the J down slightly so the hook is visually centred
-          paddingTop: `${Math.round(2 * s)}px`,
         },
         children: 'J',
       },
