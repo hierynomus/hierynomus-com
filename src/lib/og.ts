@@ -34,14 +34,76 @@ export async function generateOgImage(opts: {
   badgeColor?: string;
   /** Path relative to /public, e.g. /images/talks/kubecon-eu-2026.svg */
   image?: string;
+  /** Path relative to /public — shown as a circular avatar (for the home/default OG) */
+  avatar?: string;
 }): Promise<Buffer> {
-  const { title, subtitle, badge, badgeColor = '#30ba78', image } = opts;
+  const { title, subtitle, badge, badgeColor = '#30ba78', image, avatar } = opts;
 
   const imageDataUrl = image ? publicFileToDataUrl(image) : null;
+  const avatarDataUrl = avatar ? publicFileToDataUrl(avatar) : null;
 
   const titleFontSize = title.length > 60 ? 44 : title.length > 40 ? 52 : 60;
   const titleTruncated = title.length > 95 ? title.slice(0, 92) + '…' : title;
   const subtitleTruncated = subtitle && subtitle.length > 70 ? subtitle.slice(0, 67) + '…' : subtitle;
+
+  // ── Avatar layout (home / default OG) ────────────────────────────────────
+  if (avatarDataUrl && !imageDataUrl) {
+    // Pass 1 — satori renders text overlay on transparent background
+    const overlaySvg = await satori({
+      type: 'div',
+      props: {
+        style: { width: '1200px', height: '630px', display: 'flex', position: 'relative' as const, fontFamily: 'Inter' },
+        children: [
+          // Top mint stripe
+          { type: 'div', props: { style: { position: 'absolute' as const, top: '0px', left: '0px', width: '1200px', height: '4px', backgroundColor: '#90ebcd' } } },
+          // Text block — left side
+          {
+            type: 'div',
+            props: {
+              style: { position: 'absolute' as const, top: '0px', left: '0px', width: '720px', height: '566px', display: 'flex', flexDirection: 'column' as const, justifyContent: 'center', padding: '48px 72px' },
+              children: [
+                { type: 'div', props: { style: { color: 'rgba(144,235,205,0.7)', fontSize: '22px', fontWeight: 700, marginBottom: '20px', letterSpacing: '0.15em' }, children: 'hierynomus.com' } },
+                { type: 'div', props: { style: { color: '#ffffff', fontSize: '72px', fontWeight: 700, lineHeight: 1.05, marginBottom: '20px' }, children: title } },
+                ...(subtitle ? [{ type: 'div', props: { style: { color: 'rgba(144,235,205,0.75)', fontSize: '26px', fontWeight: 700, lineHeight: 1.3 }, children: subtitle } }] : []),
+              ],
+            },
+          },
+          // Footer
+          {
+            type: 'div',
+            props: {
+              style: { position: 'absolute' as const, bottom: '0px', left: '0px', width: '1200px', height: '64px', backgroundColor: 'rgba(6,20,16,0.80)', display: 'flex', alignItems: 'center', padding: '0px 72px' },
+              children: [
+                { type: 'div', props: { style: { color: 'rgba(239,239,239,0.55)', fontSize: '18px', fontWeight: 700 }, children: 'Technology Advocate at SUSE · Cloud Native Speaker' } },
+              ],
+            },
+          },
+        ],
+      },
+    }, {
+      width: 1200,
+      height: 630,
+      fonts: [{ name: 'Inter', data: fontData, weight: 700, style: 'normal' }],
+    });
+
+    // Pass 2 — composite: pine background + circular avatar + overlay
+    const innerSvg = overlaySvg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
+    const cx = 960, cy = 280, r = 210;
+    const compositeSvg = `<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <rect width="1200" height="630" fill="#0c322c"/>
+  <defs>
+    <clipPath id="avatar">
+      <circle cx="${cx}" cy="${cy}" r="${r}"/>
+    </clipPath>
+  </defs>
+  <circle cx="${cx}" cy="${cy}" r="${r + 6}" fill="rgba(144,235,205,0.15)"/>
+  <image x="${cx - r}" y="${cy - r}" width="${r * 2}" height="${r * 2}" href="${avatarDataUrl}" preserveAspectRatio="xMidYMid slice" clip-path="url(#avatar)"/>
+  <svg x="0" y="0" width="1200" height="630" viewBox="0 0 1200 630">${innerSvg}</svg>
+</svg>`;
+
+    const resvg = new Resvg(compositeSvg, { fitTo: { mode: 'width', value: 1200 } });
+    return Buffer.from(resvg.render().asPng());
+  }
 
   // ── No-image layout (solid pine) ─────────────────────────────────────────
   if (!imageDataUrl) {
@@ -102,7 +164,7 @@ export async function generateOgImage(opts: {
                     style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 80px 28px 80px' },
                     children: [
                       { type: 'div', props: { style: { color: 'rgba(239,239,239,0.55)', fontSize: '20px', fontWeight: 700 }, children: 'Jeroen van Erp' } },
-                      { type: 'div', props: { style: { color: 'rgba(239,239,239,0.55)', fontSize: '20px', fontWeight: 700 }, children: 'speaking.hierynomus.com' } },
+                      { type: 'div', props: { style: { color: 'rgba(239,239,239,0.55)', fontSize: '20px', fontWeight: 700 }, children: 'hierynomus.com' } },
                     ],
                   },
                 },
@@ -233,7 +295,7 @@ export async function generateOgImage(opts: {
             },
             children: [
               { type: 'div', props: { style: { color: 'rgba(239,239,239,0.65)', fontSize: '18px', fontWeight: 700 }, children: 'Jeroen van Erp' } },
-              { type: 'div', props: { style: { color: 'rgba(144,235,205,0.55)', fontSize: '18px', fontWeight: 700 }, children: 'speaking.hierynomus.com' } },
+              { type: 'div', props: { style: { color: 'rgba(144,235,205,0.55)', fontSize: '18px', fontWeight: 700 }, children: 'hierynomus.com' } },
             ],
           },
         },
