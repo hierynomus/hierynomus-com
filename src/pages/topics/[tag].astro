@@ -120,7 +120,7 @@ const filteredWriting = allWriting
         </div>
         <div class="space-y-4">
           {filteredWriting.map(article => (
-            <article class="group flex flex-col sm:flex-row sm:items-start gap-4 bg-white dark:bg-midnight border border-pine/10 dark:border-midnight rounded-xl p-5 hover:border-jungle/50 dark:hover:border-mint/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5">
+            <article class="group flex flex-col sm:flex-row sm:items-start gap-4 bg-white dark:bg-white/8 border border-pine/10 dark:border-white/10 rounded-xl p-5 hover:border-jungle/50 dark:hover:border-mint/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5">
               <div class="flex-shrink-0 sm:w-44">
                 <time datetime={article.data.date.toISOString()} class="text-xs text-pine/45 dark:text-fog/40 block mb-1">
                   {article.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}

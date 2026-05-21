@@ -112,7 +112,7 @@ const pageUrl = new URL(`/blog/${post.id}`, Astro.site ?? SITE.url).toString();
 
         <!-- Tags -->
         {post.data.tags.length > 0 && (
-          <div class="bg-fog/60 dark:bg-midnight/60 rounded-xl p-4">
+          <div class="bg-fog/60 dark:bg-white/8 rounded-xl p-4">
             <p class="text-xs font-semibold uppercase tracking-wide text-pine/50 dark:text-fog/50 mb-3">Tags</p>
             <div class="flex flex-wrap gap-1.5">
               {post.data.tags.map(tag => (
