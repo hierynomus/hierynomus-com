@@ -63,6 +63,8 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
 
 <Layout title={META.home.title} description={META.home.description}>
   <Fragment slot="head">
+    <!-- Preload LCP image — browser discovers it before parsing the hero section -->
+    <link rel="preload" as="image" href="/jeroen-van-erp.jpg" fetchpriority="high" />
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "Person",
@@ -188,6 +190,8 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
                 class="w-full h-full object-cover"
                 width="320"
                 height="320"
+                loading="eager"
+                fetchpriority="high"
               />
             </div>
             <!-- SUSE badge -->
