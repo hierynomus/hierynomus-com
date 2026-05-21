@@ -39,8 +39,8 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           command: pages deploy dist --project-name=hierynomus-speaking-site --branch=${{ github.ref == 'refs/heads/main' && 'main' || github.head_ref }}
 
-  cleanup:
-    name: Delete preview deployment
+  cleanup-previews:
+    name: Delete preview deployments
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     permissions:
@@ -57,7 +57,31 @@ jobs:
           echo "$DEPLOYMENTS" | jq -r \
             ".result[] | select(.deployment_trigger.metadata.branch == \"$BRANCH\") | .id" \
           | while read -r ID; do
-            echo "Deleting deployment $ID for branch $BRANCH"
+            echo "Deleting preview deployment $ID for branch $BRANCH"
+            curl -s -X DELETE \
+              "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/hierynomus-speaking-site/deployments/$ID?force=true" \
+              -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          done
+
+  cleanup-production:
+    name: Keep last 5 production deployments
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs: [deploy]
+    permissions:
+      contents: read
+
+    steps:
+      - name: Delete old production deployments
+        run: |
+          DEPLOYMENTS=$(curl -s \
+            "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/hierynomus-speaking-site/deployments" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}")
+
+          echo "$DEPLOYMENTS" | jq -r \
+            '[.result[] | select(.deployment_trigger.metadata.branch == "main")] | sort_by(.created_on) | reverse | .[5:] | .[].id' \
+          | while read -r ID; do
+            echo "Deleting old production deployment $ID"
             curl -s -X DELETE \
               "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/hierynomus-speaking-site/deployments/$ID?force=true" \
               -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}"
