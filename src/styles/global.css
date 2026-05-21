@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+/* Self-hosted fonts — avoids render-blocking external stylesheet from Google Fonts.
+   latin-only subsets; woff2 provided by @fontsource packages (already used by og.ts). */
+@import "@fontsource/inter/latin-400.css";
+@import "@fontsource/inter/latin-500.css";
+@import "@fontsource/inter/latin-600.css";
+@import "@fontsource/space-grotesk/latin-400.css";
+@import "@fontsource/space-grotesk/latin-500.css";
+@import "@fontsource/space-grotesk/latin-600.css";
+@import "@fontsource/space-grotesk/latin-700.css";
+
 @theme {
   /* SUSE Brand Colors */
   --color-fog: #efefef;

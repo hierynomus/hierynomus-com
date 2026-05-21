@@ -137,7 +137,7 @@ Items to implement or investigate. Check them off as they are done.
 
 ### Performance
 - [ ] Image optimisation — Susecon keynote image is ~4.5 MB JPEG; convert to WebP/AVIF or resize at source. Consider Astro `<Image>` component for automatic optimisation.
-- [ ] Self-host Inter — Google Fonts stylesheet is render-blocking (~720 ms savings). Swap to `@fontsource/inter` (already installed for OG/favicon pipeline) with `font-display: optional`.
+- [X] Self-host Inter — Google Fonts stylesheet is render-blocking (~720 ms savings). Swap to `@fontsource/inter` (already installed for OG/favicon pipeline) with `font-display: optional`.
 - [x] Preload hero headshot — `<link rel="preload" as="image" fetchpriority="high">` + `fetchpriority="high"` on the `<img>`, scoped to `index.astro` head slot. (PR #12)
 
 ### Content
