@@ -1,5 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { githubProjectsLoader } from './lib/github-projects-loader';
+import { PROJECTS } from './config/projects';
 
 const talks = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/talks' }),
@@ -50,13 +52,15 @@ const blog = defineCollection({
 });
 
 const projects = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
+  loader: githubProjectsLoader(PROJECTS),
   schema: z.object({
     name: z.string(),
     description: z.string(),
     url: z.string(),
     language: z.string(),
     license: z.string(),
+    stars: z.number(),
+    forks: z.number(),
     featured: z.boolean().default(false),
   }),
 });
