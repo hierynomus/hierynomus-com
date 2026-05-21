@@ -32,9 +32,18 @@
 </button>
 
 <script>
-  const toggle = document.getElementById('theme-toggle');
-  toggle?.addEventListener('click', () => {
-    const isDark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  });
+  function initThemeToggle() {
+    const toggle = document.getElementById('theme-toggle');
+    // Guard against double-binding after view transitions
+    if (!toggle || toggle.dataset.bound) return;
+    toggle.dataset.bound = '1';
+    toggle.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+  }
+
+  // Initial bind + rebind after every ClientRouter navigation
+  initThemeToggle();
+  document.addEventListener('astro:page-load', initThemeToggle);
 </script>
