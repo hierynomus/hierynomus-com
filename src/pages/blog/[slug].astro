@@ -87,9 +87,9 @@ const pageUrl = new URL(`/blog/${post.id}`, Astro.site ?? SITE.url).toString();
         prose-a:text-jungle dark:prose-a:text-mint prose-a:no-underline hover:prose-a:underline
         prose-strong:text-pine dark:prose-strong:text-fog
         prose-code:text-pine dark:prose-code:text-mint
-        prose-code:bg-fog dark:prose-code:bg-midnight/60
+        prose-code:bg-fog dark:prose-code:bg-white/8
         prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal
-        prose-pre:bg-pine dark:prose-pre:bg-midnight/80
+        prose-pre:bg-pine dark:prose-pre:bg-white/8
         prose-pre:border prose-pre:border-pine/20 dark:prose-pre:border-mint/10
         prose-blockquote:border-jungle dark:prose-blockquote:border-mint
         prose-blockquote:text-pine/70 dark:prose-blockquote:text-fog/60
@@ -112,8 +112,8 @@ const pageUrl = new URL(`/blog/${post.id}`, Astro.site ?? SITE.url).toString();
 
         <!-- Tags -->
         {post.data.tags.length > 0 && (
-          <div class="bg-fog/60 dark:bg-midnight/60 rounded-xl p-4">
-            <p class="text-xs font-semibold uppercase tracking-wide text-pine/50 dark:text-fog/50 mb-3">Tags</p>
+          <div class="bg-fog/60 dark:bg-white/8 rounded-xl p-4">
+            <p class="text-xs font-semibold uppercase tracking-wide text-pine/65 dark:text-fog/65 mb-3">Tags</p>
             <div class="flex flex-wrap gap-1.5">
               {post.data.tags.map(tag => (
                 <span class="text-xs bg-mint/15 dark:bg-pine/60 text-pine/70 dark:text-mint/80 px-2 py-0.5 rounded-full border border-mint/20 dark:border-mint/15">

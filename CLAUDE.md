@@ -153,28 +153,23 @@ Items to implement or investigate. Check them off as they are done.
 - [ ] Speaking topics page — dedicated `/topics` page already exists; consider richer content (full descriptions, audience takeaways, sample slides).
 
 ### Quality
-- [ ] Accessibility pass — verify keyboard navigation, ARIA labels on icon-only buttons, colour contrast ratios (Persimmon on white, Mint on Pine).
-- [x] Lighthouse audit — **100 / 95 / 100 / 100** (Perf / A11y / Best Practices / SEO). See findings below.
+- [x] Accessibility pass — WCAG AA colour contrast fixes across all pages + brand-colour overrides in global.css. (PR #13)
+- [x] Lighthouse audit — **100 / 95 / 100 / 100** (Perf / A11y / Best Practices / SEO) — now **100 / 100 / 100 / 100** after PR #13. See findings below.
 - [ ] Imprint / legal page — required for some European events and sponsor decks.
 
-### Lighthouse findings (run 2026-05-20, against production build)
+### Lighthouse findings (run 2026-05-21, against local build)
 
-| Category       | Score |
-|----------------|-------|
-| Performance    | 100   |
-| Accessibility  | 95    |
-| Best Practices | 100   |
-| SEO            | 100   |
+| Category       | Score (before PR #13) | Score (after PR #13) |
+|----------------|-----------------------|----------------------|
+| Performance    | 100                   | 100                  |
+| Accessibility  | 95                    | **100** (light + dark) |
+| Best Practices | 100                   | 100                  |
+| SEO            | 100                   | 100                  |
 
-**Accessibility (score: 95) — colour contrast failures:**
-Lighthouse flagged many elements with insufficient contrast ratio. All in light mode (dark mode was not tested):
-- Hero CTA buttons — semi-transparent text (`text-white/60`, `text-white/70`) on gradient background
-- TalkCard date/type pill (`text-pine/45`, `text-pine/50`) on white card background
-- Writing section publication name and date (`text-xs text-pine/50`) on light card background
-- Contact section LinkedIn button — `border-mint/30 text-fog` on pine gradient
-- Footer copyright and links (`text-sm text-pine/...`) on white background
-
-Fix: bump opacity on the worst offenders — `/45` → `/60`, `/50` → `/65`, `/30` → `/50` in the relevant components.
+**Accessibility — all colour contrast failures resolved (PR #13):**
+- Removed all `dark:bg-midnight` card backgrounds → `dark:bg-white/8` (warm teal overlay on pine)
+- Brand colours: `text-jungle` darkened to `#1a7a4a` in light mode via `global.css` override (4.9:1 on white); CTA button text swapped from white to pine on `bg-jungle`/`bg-persimmon` (5.4:1 / 5.2:1)
+- All secondary text bumped from `/40–/55` to `/65–/75` across every component and page
 
 **Performance — render-blocking resource (est. 720 ms savings):**
 Google Fonts stylesheet is render-blocking. Fix: swap to `font-display: optional` or self-host Inter (already available via `@fontsource/inter`; `og.ts` already loads it from there).

@@ -106,7 +106,7 @@ const jsonLd = {
         <span class:list={['inline-flex text-xs font-semibold px-2.5 py-1 rounded-full', cfg.classes]}>
           {cfg.label}
         </span>
-        <time datetime={talk.data.date.toISOString()} class="text-fog/50 text-sm">
+        <time datetime={talk.data.date.toISOString()} class="text-fog/80 text-sm">
           {dateLabel}{endDateLabel ? ` – ${endDateLabel}` : ''}
         </time>
       </div>
@@ -177,23 +177,23 @@ const jsonLd = {
 
       <!-- Sidebar: event info -->
       <aside class="space-y-6">
-        <div class="bg-fog/60 dark:bg-midnight/60 rounded-xl p-5 space-y-4">
+        <div class="bg-fog/60 dark:bg-white/8 rounded-xl p-5 space-y-4">
           <h3 class="font-display font-semibold text-pine dark:text-fog text-sm uppercase tracking-wide">Event Details</h3>
 
           <div>
-            <p class="text-xs text-pine/50 dark:text-fog/50 mb-1">Event</p>
+            <p class="text-xs text-pine/65 dark:text-fog/65 mb-1">Event</p>
             <p class="font-medium text-pine dark:text-fog text-sm">{talk.data.event}</p>
           </div>
 
           <div>
-            <p class="text-xs text-pine/50 dark:text-fog/50 mb-1">Date</p>
+            <p class="text-xs text-pine/65 dark:text-fog/65 mb-1">Date</p>
             <p class="font-medium text-pine dark:text-fog text-sm">
               {dateLabel}{endDateLabel ? ` – ${endDateLabel}` : ''}
             </p>
           </div>
 
           <div>
-            <p class="text-xs text-pine/50 dark:text-fog/50 mb-1">Format</p>
+            <p class="text-xs text-pine/65 dark:text-fog/65 mb-1">Format</p>
             <span class:list={['inline-flex text-xs font-semibold px-2 py-0.5 rounded-full', cfg.classes]}>
               {cfg.label}
             </span>
@@ -201,7 +201,7 @@ const jsonLd = {
 
           {talk.data.co_presenters.length > 0 && (
             <div>
-              <p class="text-xs text-pine/50 dark:text-fog/50 mb-1">
+              <p class="text-xs text-pine/65 dark:text-fog/65 mb-1">
                 {talk.data.co_presenters.length === 1 ? 'Co-presenter' : 'Co-presenters'}
               </p>
               <ul class="space-y-1">

@@ -40,7 +40,7 @@ const langColor = LANG_COLORS[language] ?? '#8b949e';
   href={url}
   target="_blank"
   rel="noopener noreferrer"
-  class="group flex flex-col bg-white dark:bg-midnight border border-pine/10 dark:border-midnight rounded-xl p-6 hover:border-jungle/50 dark:hover:border-mint/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
+  class="group flex flex-col bg-white dark:bg-white/8 border border-pine/10 dark:border-white/10 rounded-xl p-6 hover:border-jungle/50 dark:hover:border-mint/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
 >
   <!-- Header row -->
   <div class="flex items-start justify-between mb-4">
@@ -65,7 +65,7 @@ const langColor = LANG_COLORS[language] ?? '#8b949e';
   </p>
 
   <!-- Footer: language · stars · forks · license -->
-  <div class="flex items-center gap-3 text-xs text-pine/50 dark:text-fog/50 flex-wrap">
+  <div class="flex items-center gap-3 text-xs text-pine/70 dark:text-fog/70 flex-wrap">
     <span class="flex items-center gap-1.5">
       <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style={`background-color: ${langColor}`}></span>
       {language}

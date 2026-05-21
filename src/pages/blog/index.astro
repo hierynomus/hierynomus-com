@@ -42,12 +42,12 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
                 {i > 0 && <div class="border-t border-pine/8 dark:border-mint/8" />}
                 <a
                   href={`/blog/${post.id}`}
-                  class="group flex flex-col sm:flex-row sm:items-start gap-4 py-8 hover:bg-fog/30 dark:hover:bg-midnight/30 -mx-4 px-4 rounded-xl transition-colors"
+                  class="group flex flex-col sm:flex-row sm:items-start gap-4 py-8 hover:bg-fog/30 dark:hover:bg-white/5 -mx-4 px-4 rounded-xl transition-colors"
                 >
                   <!-- Date column -->
                   <time
                     datetime={post.data.date.toISOString()}
-                    class="shrink-0 text-sm text-pine/40 dark:text-fog/40 sm:w-36 sm:pt-0.5"
+                    class="shrink-0 text-sm text-pine/65 dark:text-fog/65 sm:w-36 sm:pt-0.5"
                   >
                     {dateLabel}
                   </time>
@@ -59,14 +59,14 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
                     </h2>
 
                     {post.data.description && (
-                      <p class="text-pine/60 dark:text-fog/60 text-sm leading-relaxed mb-3 line-clamp-2">
+                      <p class="text-pine/70 dark:text-fog/70 text-sm leading-relaxed mb-3 line-clamp-2">
                         {post.data.description}
                       </p>
                     )}
 
                     <div class="flex flex-wrap items-center gap-3">
                       <!-- Reading time -->
-                      <span class="flex items-center gap-1 text-xs text-pine/40 dark:text-fog/40">
+                      <span class="flex items-center gap-1 text-xs text-pine/65 dark:text-fog/65">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                           <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                         </svg>

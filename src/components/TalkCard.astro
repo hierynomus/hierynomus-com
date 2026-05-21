@@ -32,7 +32,7 @@ const dateLabel = date.toLocaleDateString('en-GB', {
 
 <article
   class:list={[
-    'group flex flex-col bg-white dark:bg-midnight border border-pine/10 dark:border-midnight rounded-xl transition-all duration-200',
+    'group flex flex-col bg-white dark:bg-white/8 border border-pine/10 dark:border-white/10 rounded-xl transition-all duration-200',
     'hover:border-jungle/50 dark:hover:border-mint/30 hover:shadow-lg hover:-translate-y-0.5',
     compact ? 'p-4' : 'p-6',
   ]}
@@ -44,7 +44,7 @@ const dateLabel = date.toLocaleDateString('en-GB', {
     </span>
     <time
       datetime={date.toISOString()}
-      class="text-xs text-pine/50 dark:text-fog/40 whitespace-nowrap"
+      class="text-xs text-pine/70 dark:text-fog/70 whitespace-nowrap"
     >
       {dateLabel}
     </time>
@@ -92,7 +92,7 @@ const dateLabel = date.toLocaleDateString('en-GB', {
         href={slides_url}
         target="_blank"
         rel="noopener noreferrer"
-        class="text-pine/45 dark:text-fog/45 hover:text-jungle dark:hover:text-mint transition-colors"
+        class="text-pine/65 dark:text-fog/60 hover:text-jungle dark:hover:text-mint transition-colors"
       >
         Slides ↗
       </a>
@@ -102,7 +102,7 @@ const dateLabel = date.toLocaleDateString('en-GB', {
         href={video_url}
         target="_blank"
         rel="noopener noreferrer"
-        class="text-pine/45 dark:text-fog/45 hover:text-jungle dark:hover:text-mint transition-colors"
+        class="text-pine/65 dark:text-fog/60 hover:text-jungle dark:hover:text-mint transition-colors"
       >
         {videoLabel}
       </a>

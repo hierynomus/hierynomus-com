@@ -53,10 +53,10 @@ const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
         {sortedTags.map(([tag, count]) => (
           <a
             href={`/topics/${encodeURIComponent(tag)}`}
-            class="group inline-flex items-center gap-2 bg-white dark:bg-midnight border border-pine/15 dark:border-mint/15 hover:border-jungle/50 dark:hover:border-mint/40 hover:shadow-md text-pine dark:text-fog hover:text-jungle dark:hover:text-mint px-4 py-2 rounded-full transition-all duration-200"
+            class="group inline-flex items-center gap-2 bg-white dark:bg-white/8 border border-pine/15 dark:border-mint/15 hover:border-jungle/50 dark:hover:border-mint/40 hover:shadow-md text-pine dark:text-fog hover:text-jungle dark:hover:text-mint px-4 py-2 rounded-full transition-all duration-200"
           >
             <span class="font-medium text-sm">{tag}</span>
-            <span class="text-xs bg-fog dark:bg-pine/60 text-pine/50 dark:text-fog/50 group-hover:bg-jungle/10 dark:group-hover:bg-mint/10 px-1.5 py-0.5 rounded-full tabular-nums">
+            <span class="text-xs bg-fog dark:bg-pine/60 text-pine/65 dark:text-fog/65 group-hover:bg-jungle/10 dark:group-hover:bg-mint/10 px-1.5 py-0.5 rounded-full tabular-nums">
               {count}
             </span>
           </a>

@@ -41,3 +41,17 @@
     font-family: var(--font-display);
   }
 }
+
+/* ── Accessibility: brand-colour contrast fixes ──────────────────────────── */
+/* jungle (#30ba78) is only 2.5:1 on white — darken to #1a7a4a (4.9:1) in light mode */
+html:not(.dark) .text-jungle {
+  color: #1a7a4a;
+}
+
+/* CTA buttons: swap text-white to pine on jungle/persimmon backgrounds.
+   Two-class specificity beats single-class .text-white without !important.
+   pine on jungle = 5.4:1 · pine on persimmon = 5.2:1 (WCAG AA) */
+.bg-jungle.text-white,
+.bg-persimmon.text-white {
+  color: rgb(12 50 44); /* pine */
+}

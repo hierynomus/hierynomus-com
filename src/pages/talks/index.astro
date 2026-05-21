@@ -53,7 +53,7 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
               'filter-tab px-4 py-1.5 rounded-full text-sm font-medium border transition-colors',
               type === 'all'
                 ? 'bg-jungle text-white border-jungle'
-                : 'bg-white dark:bg-midnight text-pine/65 dark:text-fog/65 border-pine/15 dark:border-mint/15 hover:border-jungle/40 dark:hover:border-mint/40',
+                : 'bg-white dark:bg-white/8 text-pine/65 dark:text-fog/65 border-pine/15 dark:border-mint/15 hover:border-jungle/40 dark:hover:border-mint/40',
             ]}
           >
             {type === 'all' ? 'All' : TYPE_CONFIG[type]?.label ?? type}
@@ -117,7 +117,7 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
         t.classList.toggle('text-white', active);
         t.classList.toggle('border-jungle', active);
         t.classList.toggle('bg-white', !active);
-        t.classList.toggle('dark:bg-midnight', !active);
+        t.classList.toggle('dark:bg-white/8', !active);
         t.classList.toggle('text-pine/65', !active);
         t.classList.toggle('dark:text-fog/65', !active);
         t.classList.toggle('border-pine/15', !active);
