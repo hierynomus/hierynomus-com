@@ -281,7 +281,7 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
             </div>
             <div>
               <p class="font-semibold text-pine dark:text-fog text-sm">SUSE</p>
-              <p class="text-pine/50 dark:text-fog/50 text-xs">The world's largest independent open source company</p>
+              <p class="text-pine/65 dark:text-fog/65 text-xs">The world's largest independent open source company</p>
             </div>
           </div>
         </div>
@@ -363,10 +363,10 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
               )}
               <!-- Publication name (external only) -->
               {item.external && item.publication && (
-                <span class="text-xs text-pine/70 dark:text-fog/60 leading-tight">{item.publication}</span>
+                <span class="text-xs text-pine/70 dark:text-fog/75 leading-tight">{item.publication}</span>
               )}
               <!-- Date -->
-              <time datetime={item.date.toISOString()} class="text-xs text-pine/60 dark:text-fog/55 whitespace-nowrap">
+              <time datetime={item.date.toISOString()} class="text-xs text-pine/70 dark:text-fog/75 whitespace-nowrap">
                 {item.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
               </time>
             </div>
@@ -376,7 +376,7 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
               <h3 class="font-display font-semibold text-pine dark:text-fog group-hover:text-jungle dark:group-hover:text-mint transition-colors leading-snug mb-2">
                 {item.title}
               </h3>
-              <p class="text-sm text-pine/60 dark:text-fog/55 leading-relaxed mb-3">
+              <p class="text-sm text-pine/70 dark:text-fog/75 leading-relaxed mb-3">
                 {item.description}
               </p>
               <div class="flex flex-wrap gap-1.5">

@@ -122,7 +122,7 @@ const filteredWriting = allWriting
           {filteredWriting.map(article => (
             <article class="group flex flex-col sm:flex-row sm:items-start gap-4 bg-white dark:bg-white/8 border border-pine/10 dark:border-white/10 rounded-xl p-5 hover:border-jungle/50 dark:hover:border-mint/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5">
               <div class="flex-shrink-0 sm:w-44">
-                <time datetime={article.data.date.toISOString()} class="text-xs text-pine/45 dark:text-fog/40 block mb-1">
+                <time datetime={article.data.date.toISOString()} class="text-xs text-pine/70 dark:text-fog/70 block mb-1">
                   {article.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </time>
                 <span class="inline-flex text-xs font-semibold text-jungle dark:text-mint">
@@ -140,7 +140,7 @@ const filteredWriting = allWriting
                     {article.data.title}
                   </a>
                 </h3>
-                <p class="text-sm text-pine/60 dark:text-fog/55 leading-relaxed mb-3">
+                <p class="text-sm text-pine/70 dark:text-fog/70 leading-relaxed mb-3">
                   {article.data.description}
                 </p>
                 <div class="flex flex-wrap gap-1.5">
