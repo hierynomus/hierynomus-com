@@ -62,6 +62,35 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
 ---
 
 <Layout title={META.home.title} description={META.home.description}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Jeroen van Erp",
+      "url": SITE.url,
+      "email": SITE.email,
+      "jobTitle": "Technology Advocate",
+      "description": SITE.description,
+      "image": `${SITE.url}/jeroen-van-erp.jpg`,
+      "sameAs": [
+        SOCIAL.github,
+        SOCIAL.linkedin,
+      ],
+      "worksFor": {
+        "@type": "Organization",
+        "name": "SUSE",
+        "url": "https://suse.com",
+      },
+      "knowsLanguage": SITE.languages.map(lang => ({
+        "@type": "Language",
+        "name": lang,
+      })),
+      "nationality": {
+        "@type": "Country",
+        "name": "Netherlands",
+      },
+    })} />
+  </Fragment>
 
   <!-- ─── HERO ──────────────────────────────────────────────────────────── -->
   <section class="relative overflow-hidden bg-gradient-to-br from-pine to-jungle">
@@ -293,6 +322,8 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
   </section>
 
   <!-- ─── WRITING ────────────────────────────────────────────────────────────── -->
+  <!-- Hidden when there are no published posts and no external writing yet — auto-reveals once content exists -->
+  {recentWriting.length > 0 && (
   <section id="writing" class="py-20 bg-fog/50 dark:bg-midnight/40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-end justify-between mb-10">
@@ -308,72 +339,66 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
         </a>
       </div>
 
-      {recentWriting.length > 0 ? (
-        <div class="space-y-3">
-          {recentWriting.map(item => (
-            <a
-              href={item.href}
-              target={item.external ? '_blank' : undefined}
-              rel={item.external ? 'noopener noreferrer' : undefined}
-              class="group flex flex-col sm:flex-row sm:items-start gap-4 bg-white dark:bg-midnight border border-pine/10 dark:border-midnight rounded-xl p-5 hover:border-jungle/50 dark:hover:border-mint/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
-            >
-              <!-- Badge column -->
-              <div class="flex-shrink-0 sm:w-36 flex sm:flex-col items-center sm:items-start gap-2 sm:gap-1.5 pt-0.5">
-                <!-- Type pill -->
-                {item.external ? (
-                  <span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full bg-waterhole text-white whitespace-nowrap">
-                    Article
-                  </span>
-                ) : (
-                  <span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full bg-persimmon text-white whitespace-nowrap">
-                    Blog
-                  </span>
-                )}
-                <!-- Publication name (external only) -->
-                {item.external && item.publication && (
-                  <span class="text-xs text-pine/50 dark:text-fog/45 leading-tight">{item.publication}</span>
-                )}
-                <!-- Date -->
-                <time datetime={item.date.toISOString()} class="text-xs text-pine/40 dark:text-fog/35 whitespace-nowrap">
-                  {item.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                </time>
-              </div>
-
-              <!-- Content -->
-              <div class="flex-1 min-w-0">
-                <h3 class="font-display font-semibold text-pine dark:text-fog group-hover:text-jungle dark:group-hover:text-mint transition-colors leading-snug mb-2">
-                  {item.title}
-                </h3>
-                <p class="text-sm text-pine/60 dark:text-fog/55 leading-relaxed mb-3">
-                  {item.description}
-                </p>
-                <div class="flex flex-wrap gap-1.5">
-                  {item.tags.slice(0, 4).map(tag => (
-                    <span class="text-xs bg-mint/15 dark:bg-pine/60 text-pine/70 dark:text-mint/80 px-2 py-0.5 rounded-full border border-mint/20 dark:border-mint/15">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <!-- Arrow icon -->
+      <div class="space-y-3">
+        {recentWriting.map(item => (
+          <a
+            href={item.href}
+            target={item.external ? '_blank' : undefined}
+            rel={item.external ? 'noopener noreferrer' : undefined}
+            class="group flex flex-col sm:flex-row sm:items-start gap-4 bg-white dark:bg-midnight border border-pine/10 dark:border-midnight rounded-xl p-5 hover:border-jungle/50 dark:hover:border-mint/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
+          >
+            <!-- Badge column -->
+            <div class="flex-shrink-0 sm:w-36 flex sm:flex-col items-center sm:items-start gap-2 sm:gap-1.5 pt-0.5">
+              <!-- Type pill -->
               {item.external ? (
-                <svg class="flex-shrink-0 w-4 h-4 text-pine/30 dark:text-fog/30 group-hover:text-jungle dark:group-hover:text-mint transition-colors self-center hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
+                <span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full bg-waterhole text-white whitespace-nowrap">
+                  Article
+                </span>
               ) : (
-                <svg class="flex-shrink-0 w-4 h-4 text-pine/30 dark:text-fog/30 group-hover:text-jungle dark:group-hover:text-mint transition-colors self-center hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
+                <span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full bg-persimmon text-white whitespace-nowrap">
+                  Blog
+                </span>
               )}
-            </a>
-          ))}
-        </div>
-      ) : (
-        <div class="rounded-xl border-2 border-dashed border-pine/10 dark:border-mint/10 p-12 text-center">
-          <p class="text-pine/40 dark:text-fog/40 text-sm">Writing coming soon.</p>
-        </div>
-      )}
+              <!-- Publication name (external only) -->
+              {item.external && item.publication && (
+                <span class="text-xs text-pine/50 dark:text-fog/45 leading-tight">{item.publication}</span>
+              )}
+              <!-- Date -->
+              <time datetime={item.date.toISOString()} class="text-xs text-pine/40 dark:text-fog/35 whitespace-nowrap">
+                {item.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </time>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+              <h3 class="font-display font-semibold text-pine dark:text-fog group-hover:text-jungle dark:group-hover:text-mint transition-colors leading-snug mb-2">
+                {item.title}
+              </h3>
+              <p class="text-sm text-pine/60 dark:text-fog/55 leading-relaxed mb-3">
+                {item.description}
+              </p>
+              <div class="flex flex-wrap gap-1.5">
+                {item.tags.slice(0, 4).map(tag => (
+                  <span class="text-xs bg-mint/15 dark:bg-pine/60 text-pine/70 dark:text-mint/80 px-2 py-0.5 rounded-full border border-mint/20 dark:border-mint/15">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <!-- Arrow icon -->
+            {item.external ? (
+              <svg class="flex-shrink-0 w-4 h-4 text-pine/30 dark:text-fog/30 group-hover:text-jungle dark:group-hover:text-mint transition-colors self-center hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            ) : (
+              <svg class="flex-shrink-0 w-4 h-4 text-pine/30 dark:text-fog/30 group-hover:text-jungle dark:group-hover:text-mint transition-colors self-center hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            )}
+          </a>
+        ))}
+      </div>
 
       <div class="mt-8 text-center sm:hidden">
         <a href="/writing" class="text-sm font-medium text-jungle dark:text-mint hover:underline underline-offset-2">
@@ -382,6 +407,7 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
       </div>
     </div>
   </section>
+  )}
 
   <!-- ─── BOOK ME / CONTACT ─────────────────────────────────────────────── -->
   <section id="contact" class="relative overflow-hidden bg-gradient-to-br from-pine to-jungle py-24">
