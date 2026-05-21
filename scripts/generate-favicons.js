@@ -1,6 +1,6 @@
 /**
- * Generate favicon PNGs from the SVG design using Inter (via satori) + resvg.
- * Same pipeline as src/lib/og.ts — satori turns Inter glyphs into SVG paths,
+ * Generate favicon PNGs from the SVG design using Space Grotesk (via satori) + resvg.
+ * Same pipeline as src/lib/og.ts — satori turns Space Grotesk glyphs into SVG paths,
  * resvg rasterizes the composite.
  *
  * Run whenever the favicon design changes:
@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const fontData = fs.readFileSync(
-  path.join(root, 'node_modules/@fontsource/inter/files/inter-latin-800-normal.woff')
+  path.join(root, 'node_modules/@fontsource/space-grotesk/files/space-grotesk-latin-700-normal.woff')
 );
 
 /**
@@ -36,7 +36,7 @@ const fontData = fs.readFileSync(
 async function renderFavicon(size) {
   const s = size / 32; // scale factor: all design units are in a 32×32 grid
 
-  // ── Pass 1: satori → Inter J glyph paths ──────────────────────────────────
+  // ── Pass 1: satori → Space Grotesk J glyph paths ─────────────────────────
   // Render just the letter inside a box sized to the mic capsule interior.
   // Pine fill so it sits as a "cut-out" on the mint capsule.
   const capsuleW = Math.round(14 * s);
@@ -53,8 +53,8 @@ async function renderFavicon(size) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontFamily: 'Inter',
-          fontWeight: 800,
+          fontFamily: 'Space Grotesk',
+          fontWeight: 700,
           fontSize: `${fontSize}px`,
           color: '#0c322c',
         },
@@ -64,7 +64,7 @@ async function renderFavicon(size) {
     {
       width: capsuleW,
       height: capsuleH,
-      fonts: [{ name: 'Inter', data: fontData, weight: 800, style: 'normal' }],
+      fonts: [{ name: 'Space Grotesk', data: fontData, weight: 700, style: 'normal' }],
     }
   );
 
@@ -100,7 +100,7 @@ async function renderFavicon(size) {
     <!-- Mint mic capsule -->
     <rect x="${mx}" y="${my}" width="${mw}" height="${mh}" rx="${mr}" fill="#90ebcd"/>
 
-    <!-- J from satori (Inter 800 glyph paths) -->
+    <!-- J from satori (Space Grotesk 700 glyph paths) -->
     <svg x="${mx}" y="${my}" width="${mw}" height="${mh}" viewBox="0 0 ${mw} ${mh}">
       ${jInner}
     </svg>
