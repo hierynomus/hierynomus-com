@@ -98,6 +98,7 @@ Abstract text in Markdown.
 - **Build before committing** — `npm run build` catches type errors and content schema violations at compile time.
 - **Prefer `gh` CLI** for all GitHub operations (PRs, releases, API lookups) over browser or raw `curl`.
 - **Create PRs with a description** covering what changed, why, and a test plan checklist.
+- **Update `## TODO` at the end of every task** — check off completed items, add newly discovered work, keep descriptions current.
 
 ## Content conventions
 
