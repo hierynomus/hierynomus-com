@@ -3,7 +3,9 @@ import { getCollection, getEntry, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import { readingTime } from '../../lib/reading-time';
 import SpeakingCtaCard from '../../components/SpeakingCtaCard.astro';
+import ShareButtons from '../../components/ShareButtons.astro';
 import { CTA } from '../../config/content';
+import { SITE } from '../../config/site';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -19,6 +21,8 @@ const { Content } = await render(post);
 const dateLabel = post.data.date.toLocaleDateString('en-GB', {
   day: 'numeric', month: 'long', year: 'numeric',
 });
+
+const pageUrl = new URL(`/blog/${post.id}`, Astro.site ?? SITE.url).toString();
 ---
 
 <Layout title={post.data.title} description={post.data.description} ogImage={`/og/blog/${post.id}.png`}>
@@ -102,6 +106,9 @@ const dateLabel = post.data.date.toLocaleDateString('en-GB', {
           heading={CTA.blog.heading}
           subtext={CTA.blog.subtext}
         />
+
+        <!-- Share -->
+        <ShareButtons url={pageUrl} title={post.data.title} />
 
         <!-- Tags -->
         {post.data.tags.length > 0 && (

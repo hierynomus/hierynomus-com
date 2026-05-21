@@ -3,7 +3,9 @@ import { getCollection, getEntry, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import { TYPE_CONFIG } from '../../config/talks';
 import SpeakingCtaCard from '../../components/SpeakingCtaCard.astro';
+import ShareButtons from '../../components/ShareButtons.astro';
 import { CTA } from '../../config/content';
+import { SITE } from '../../config/site';
 
 export async function getStaticPaths() {
   const talks = await getCollection('talks');
@@ -35,6 +37,8 @@ const recordingSectionLabel =
   talk.data.type === 'podcast' ? 'Episode' :
   talk.data.type === 'webinar' ? 'Webinar Recording' :
   'Recording';
+
+const pageUrl = new URL(`/talks/${talk.id}`, Astro.site ?? SITE.url).toString();
 
 // JSON-LD structured data (Event schema)
 const jsonLd = {
@@ -224,6 +228,9 @@ const jsonLd = {
             </a>
           )}
         </div>
+
+        <!-- Share -->
+        <ShareButtons url={pageUrl} title={`${talk.data.title} — ${talk.data.event}`} />
 
         <!-- Speaking CTA (only for bookable talks) -->
         {talk.data.bookable && (
