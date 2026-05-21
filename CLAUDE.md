@@ -116,6 +116,7 @@ GitHub Actions (`deploy.yml`) builds and deploys on push to `main` and on PRs.
 - Cleanup job deletes preview deployments when a PR is closed
 - Cloudflare Pages project name: `hierynomus-speaking-site`
 - Production domain: `hierynomus.com`
+- **Analytics**: enabled via Cloudflare Web Analytics automatic injection — no script tag in the codebase. Enable/manage at dash.cloudflare.com → Web Analytics.
 
 ## Person
 
