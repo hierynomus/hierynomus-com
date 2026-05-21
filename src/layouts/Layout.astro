@@ -63,7 +63,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
     <ClientRouter />
 
-    <!-- Dark mode: run before paint to prevent flash -->
+    <!-- Dark mode: run before paint to prevent flash on first load -->
     <script is:inline>
       (function () {
         const stored = localStorage.getItem('theme');
@@ -72,6 +72,19 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           document.documentElement.classList.add('dark');
         }
       })();
+    </script>
+
+    <!-- Dark mode: persist across ClientRouter navigations.
+         astro:before-swap fires before the DOM is replaced, giving us
+         access to event.newDocument so we can add .dark before first paint. -->
+    <script>
+      document.addEventListener('astro:before-swap', (e) => {
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (stored === 'dark' || (!stored && prefersDark)) {
+          (e as TransitionBeforeSwapEvent).newDocument.documentElement.classList.add('dark');
+        }
+      });
     </script>
   </head>
   <body class="min-h-screen bg-white dark:bg-pine text-pine dark:text-fog transition-colors duration-200">
