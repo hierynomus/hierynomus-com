@@ -98,6 +98,7 @@ Abstract text in Markdown.
 - **Build before committing** — `npm run build` catches type errors and content schema violations at compile time.
 - **Prefer `gh` CLI** for all GitHub operations (PRs, releases, API lookups) over browser or raw `curl`.
 - **Create PRs with a description** covering what changed, why, and a test plan checklist.
+- **Update `## TODO` at the end of every task** — check off completed items, add newly discovered work, keep descriptions current.
 
 ## Content conventions
 
@@ -131,7 +132,7 @@ Mini-farm owner (sheep).
 Items to implement or investigate. Check them off as they are done.
 
 ### SEO / discoverability
-- [ ] Favicon set — `apple-touch-icon`, `favicon.ico`, 16/32/192px PNGs from the SVG. Currently only `favicon.svg`.
+- [x] Favicon set — SVG + ICO (32 px) + apple-touch-icon (180 px) + 192 px + 512 px PNGs. Generated via `scripts/generate-favicons.js` (satori + resvg). All link tags in Layout.astro.
 - [ ] Twitter / X card meta — `twitter:site`, `twitter:creator` tags in Layout.astro.
 
 ### Performance
