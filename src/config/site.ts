@@ -11,6 +11,7 @@ export const SITE = {
 export const SOCIAL = {
   github: 'https://github.com/hierynomus',
   linkedin: 'https://linkedin.com/in/jvanerp',
+  twitterHandle: '@hierynomus',
 };
 
 export const TOPICS = [

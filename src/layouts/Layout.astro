@@ -2,7 +2,8 @@
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import { SITE } from '../config/site';
+import { SITE, SOCIAL } from '../config/site';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title: string;
@@ -35,6 +36,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={new URL(ogImage, Astro.site ?? SITE.url).toString()} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={SOCIAL.twitterHandle} />
+    <meta name="twitter:creator" content={SOCIAL.twitterHandle} />
     <meta name="twitter:image" content={new URL(ogImage, Astro.site ?? SITE.url).toString()} />
 
     <!-- RSS -->
@@ -57,6 +60,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <title>{title} | Jeroen van Erp</title>
 
     <slot name="head" />
+
+    <ClientRouter />
 
     <!-- Dark mode: run before paint to prevent flash -->
     <script is:inline>

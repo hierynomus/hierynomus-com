@@ -124,7 +124,7 @@ GitHub Actions (`deploy.yml`) builds and deploys on push to `main` and on PRs.
 
 **Jeroen van Erp** — Technology Advocate at SUSE, Cloud Native speaker, open source contributor.
 Location: Netherlands. Speaks: Dutch & English.
-GitHub: hierynomus · LinkedIn: jvanerp · Email: speaking@hierynomus.com
+GitHub: hierynomus · LinkedIn: jvanerp · Twitter: @hierynomus · Email: speaking@hierynomus.com
 Mini-farm owner (sheep).
 
 ## TODO
@@ -132,12 +132,13 @@ Mini-farm owner (sheep).
 Items to implement or investigate. Check them off as they are done.
 
 ### SEO / discoverability
-- [x] Favicon set — SVG + ICO (32 px) + apple-touch-icon (180 px) + 192 px + 512 px PNGs. Generated via `scripts/generate-favicons.js` (satori + resvg). All link tags in Layout.astro.
-- [ ] Twitter / X card meta — `twitter:site`, `twitter:creator` tags in Layout.astro.
+- [x] Favicon set — SVG + ICO (32 px) + apple-touch-icon (180 px) + 192 px + 512 px PNGs. Generated via `scripts/generate-favicons.js` (satori + resvg). All link tags in Layout.astro. (PR #9)
+- [x] Twitter / X card meta — `twitter:site` and `twitter:creator` tags added to Layout.astro. Handle in `SOCIAL.twitterHandle`. (PR #10)
 
 ### Performance
 - [ ] Image optimisation — Susecon keynote image is ~4.5 MB JPEG; convert to WebP/AVIF or resize at source. Consider Astro `<Image>` component for automatic optimisation.
-- [ ] View Transitions — add Astro's `<ViewTransitions />` for smooth page-to-page navigation (drops in with one import).
+- [ ] Self-host Inter — Google Fonts stylesheet is render-blocking (~720 ms savings). Swap to `@fontsource/inter` (already installed for OG/favicon pipeline) with `font-display: optional`.
+- [ ] Preload hero headshot — `<link rel="preload" as="image" href="/jeroen-van-erp.jpg" />` in Layout.astro; it's the LCP element.
 
 ### Content
 - [ ] Cloud Native London abstract — the meetup page is JS-rendered; fetch/extract the real abstract and update `cloud-native-london-2026.md`.
@@ -145,9 +146,10 @@ Items to implement or investigate. Check them off as they are done.
 - [ ] Testimonials — quotes from event organisers; add a section to the home page and/or about page.
 
 ### Features
+- [x] View Transitions — Astro `ClientRouter` added to Layout.astro for smooth page-to-page navigation. (PR #10)
+- [x] Social sharing buttons — `ShareButtons.astro` component (X, LinkedIn, copy-link) on blog posts and talk detail pages. (PR #10)
 - [ ] Calendar / booking link — Calendly or equivalent embedded or linked from the "Get in Touch" CTA.
 - [ ] Newsletter / mailing list — small sign-up form or Buttondown/ConvertKit embed; optional but drives repeat visits.
-- [ ] Social sharing buttons — on blog posts and talk detail pages.
 - [ ] Speaking topics page — dedicated `/topics` page already exists; consider richer content (full descriptions, audience takeaways, sample slides).
 
 ### Quality
