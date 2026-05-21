@@ -6,6 +6,7 @@ export const GET: APIRoute = async () => {
   const png = await generateOgImage({
     title: SITE.name,
     subtitle: SITE.title,
+    avatar: '/jeroen-van-erp.jpg',
   });
 
   return new Response(png, {
