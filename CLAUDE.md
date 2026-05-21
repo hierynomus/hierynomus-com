@@ -116,6 +116,8 @@ GitHub Actions (`deploy.yml`) builds and deploys on push to `main` and on PRs.
 - Cleanup job deletes preview deployments when a PR is closed
 - Cloudflare Pages project name: `hierynomus-speaking-site`
 - Production domain: `hierynomus.com`
+- **Analytics**: enabled via Cloudflare Web Analytics automatic injection — no script tag in the codebase. Enable/manage at dash.cloudflare.com → Web Analytics.
+- **GitHub project loader**: fetches live star/fork counts from the GitHub API at build time. Repos listed in `src/config/projects.ts`. Unauthenticated limit is 60 req/hr (fine for 3 repos). Set `GITHUB_TOKEN` secret in GitHub Actions / Cloudflare Pages env vars to raise to 5 000 req/hr.
 
 ## Person
 
@@ -123,3 +125,59 @@ GitHub Actions (`deploy.yml`) builds and deploys on push to `main` and on PRs.
 Location: Netherlands. Speaks: Dutch & English.
 GitHub: hierynomus · LinkedIn: jvanerp · Email: speaking@hierynomus.com
 Mini-farm owner (sheep).
+
+## TODO
+
+Items to implement or investigate. Check them off as they are done.
+
+### SEO / discoverability
+- [ ] Favicon set — `apple-touch-icon`, `favicon.ico`, 16/32/192px PNGs from the SVG. Currently only `favicon.svg`.
+- [ ] Twitter / X card meta — `twitter:site`, `twitter:creator` tags in Layout.astro.
+
+### Performance
+- [ ] Image optimisation — Susecon keynote image is ~4.5 MB JPEG; convert to WebP/AVIF or resize at source. Consider Astro `<Image>` component for automatic optimisation.
+- [ ] View Transitions — add Astro's `<ViewTransitions />` for smooth page-to-page navigation (drops in with one import).
+
+### Content
+- [ ] Cloud Native London abstract — the meetup page is JS-rendered; fetch/extract the real abstract and update `cloud-native-london-2026.md`.
+- [ ] Press kit / media page — headshot downloads, bio blurbs, logo files, past coverage links.
+- [ ] Testimonials — quotes from event organisers; add a section to the home page and/or about page.
+
+### Features
+- [ ] Calendar / booking link — Calendly or equivalent embedded or linked from the "Get in Touch" CTA.
+- [ ] Newsletter / mailing list — small sign-up form or Buttondown/ConvertKit embed; optional but drives repeat visits.
+- [ ] Social sharing buttons — on blog posts and talk detail pages.
+- [ ] Speaking topics page — dedicated `/topics` page already exists; consider richer content (full descriptions, audience takeaways, sample slides).
+
+### Quality
+- [ ] Accessibility pass — verify keyboard navigation, ARIA labels on icon-only buttons, colour contrast ratios (Persimmon on white, Mint on Pine).
+- [x] Lighthouse audit — **100 / 95 / 100 / 100** (Perf / A11y / Best Practices / SEO). See findings below.
+- [ ] Imprint / legal page — required for some European events and sponsor decks.
+
+### Lighthouse findings (run 2026-05-20, against production build)
+
+| Category       | Score |
+|----------------|-------|
+| Performance    | 100   |
+| Accessibility  | 95    |
+| Best Practices | 100   |
+| SEO            | 100   |
+
+**Accessibility (score: 95) — colour contrast failures:**
+Lighthouse flagged many elements with insufficient contrast ratio. All in light mode (dark mode was not tested):
+- Hero CTA buttons — semi-transparent text (`text-white/60`, `text-white/70`) on gradient background
+- TalkCard date/type pill (`text-pine/45`, `text-pine/50`) on white card background
+- Writing section publication name and date (`text-xs text-pine/50`) on light card background
+- Contact section LinkedIn button — `border-mint/30 text-fog` on pine gradient
+- Footer copyright and links (`text-sm text-pine/...`) on white background
+
+Fix: bump opacity on the worst offenders — `/45` → `/60`, `/50` → `/65`, `/30` → `/50` in the relevant components.
+
+**Performance — render-blocking resource (est. 720 ms savings):**
+Google Fonts stylesheet is render-blocking. Fix: swap to `font-display: optional` or self-host Inter (already available via `@fontsource/inter`; `og.ts` already loads it from there).
+
+**LCP (image not preloaded):**
+The hero headshot `jeroen-van-erp.jpg` is the LCP element but is not preloaded. Add `<link rel="preload" as="image" href="/jeroen-van-erp.jpg" />` in `Layout.astro` when on the home page (or unconditionally — it's small).
+
+**Image delivery:**
+Hero headshot is a JPEG; convert to WebP/AVIF for ~20–40% savings. (Same applies to the Susecon keynote image at ~4.5 MB.)
