@@ -117,6 +117,7 @@ GitHub Actions (`deploy.yml`) builds and deploys on push to `main` and on PRs.
 - Cloudflare Pages project name: `hierynomus-speaking-site`
 - Production domain: `hierynomus.com`
 - **Analytics**: enabled via Cloudflare Web Analytics automatic injection — no script tag in the codebase. Enable/manage at dash.cloudflare.com → Web Analytics.
+- **GitHub project loader**: fetches live star/fork counts from the GitHub API at build time. Repos listed in `src/config/projects.ts`. Unauthenticated limit is 60 req/hr (fine for 3 repos). Set `GITHUB_TOKEN` secret in GitHub Actions / Cloudflare Pages env vars to raise to 5 000 req/hr.
 
 ## Person
 
