@@ -4,7 +4,7 @@ event: "The Future is Open — A SUSE Podcast"
 date: 2026-05-19
 type: podcast
 tags: [podcast, suse, open-source, kubernetes, susecon]
-featured: false
+featured: true
 bookable: false
 video_url: https://podcasts.apple.com/us/podcast/building-your-resilient-future-the-susecon-2026-wrap-up/id1816262576?i=1000768520199
 co_presenters:

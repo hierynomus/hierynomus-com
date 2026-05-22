@@ -6,7 +6,7 @@ type: conference
 tags: [platform-engineering, kubernetes, security, open-source, composability, enterprise]
 conference_url: https://kccncna2025.sched.com/event/2A7Db/sponsored-demo-beyond-the-yaml-architecting-a-composable-secure-and-open-source-platform-for-the-enterprise
 image: /images/talks/kubecon-na-2025.svg
-featured: true
+featured: false
 bookable: false
 co_presenters:
   - name: Robert Sirchia

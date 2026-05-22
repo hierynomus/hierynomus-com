@@ -6,7 +6,7 @@ type: meetup
 tags: [containers, supply-chain-security, sbom, images, production]
 conference_url: https://www.meetup.com/cloud-native-london/events/310408638/
 video_url: https://www.youtube.com/live/ycjbonELfNw?si=UUHl54C0dv0z41Xe&t=702
-featured: true
+featured: false
 ---
 
 <!-- Abstract placeholder — replace with final abstract -->
