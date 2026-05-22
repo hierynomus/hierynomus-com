@@ -3,7 +3,7 @@ export const SITE = {
   title: 'Technology Advocate & Cloud Native Speaker',
   description: 'Cloud Native speaker and Technology Advocate at SUSE. Talks on Kubernetes, security, and the open source ecosystem.',
   url: 'https://hierynomus.com',
-  email: 'speaking@hierynomus.com',
+  email: 'jeroen@hierynomus.com',
   location: 'Netherlands',
   languages: ['Dutch', 'English'],
 };
@@ -25,4 +25,3 @@ export const TOPICS = [
   'GitOps',
   'Developer Experience',
 ];
-

@@ -124,7 +124,7 @@ GitHub Actions (`deploy.yml`) builds and deploys on push to `main` and on PRs.
 
 **Jeroen van Erp** — Technology Advocate at SUSE, Cloud Native speaker, open source contributor.
 Location: Netherlands. Speaks: Dutch & English.
-GitHub: hierynomus · LinkedIn: jvanerp · Twitter: @hierynomus · Email: speaking@hierynomus.com
+GitHub: hierynomus · LinkedIn: jvanerp · Twitter: @hierynomus · Email: jeroen@hierynomus.com
 Mini-farm owner (sheep).
 
 ## TODO
