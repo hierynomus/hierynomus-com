@@ -58,6 +58,13 @@ export const BIO = {
   /** About page section heading */
   sectionHeading: 'Building bridges between complex tech and real-world teams',
 
+  /**
+   * 500-character press bio for conference programmes and event organisers.
+   * "Rancher" is a deliberate double-meaning: SUSE Rancher + mini-farm life.
+   */
+  press:
+    'Jeroen van Erp is a Technology Advocate at SUSE and Cloud Native speaker, helping developers and platform engineers build open, portable, and resilient infrastructure. With a background spanning engineering, architecture, and product management, he distills complex topics — Kubernetes, observability, cloud-native security, and open source — into actionable insights. Active open source contributor and maintainer. A rancher at heart, he tends to his mini-farm in the Netherlands.',
+
   /** SUSE role blurb used on the about page */
   suseRole:
     'As a Technology Advocate at SUSE, I work at the intersection of product, community, and engineering — helping teams understand and adopt open source technologies at scale.',
