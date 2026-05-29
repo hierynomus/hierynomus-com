@@ -16,6 +16,7 @@ export const SOCIAL = {
 
 export const TOPICS = [
   'Kubernetes',
+  'Observability',
   'Cloud Native Security',
   'Supply Chain Security',
   'Virtualization & Containers',
