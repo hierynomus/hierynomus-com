@@ -63,7 +63,7 @@ export const BIO = {
    * "Rancher" is a deliberate double-meaning: SUSE Rancher + mini-farm life.
    */
   press:
-    'Jeroen van Erp is a Technology Advocate at SUSE and Cloud Native speaker, helping developers and platform engineers build open, portable, and resilient infrastructure. With a background spanning engineering, architecture, and product management, he distills complex topics — Kubernetes, observability, cloud-native security, and open source — into actionable insights. Active open source contributor and maintainer. A rancher at heart, he tends to his mini-farm in the Netherlands.',
+    'Jeroen van Erp is a Technology Advocate at SUSE and Cloud Native speaker, helping developers and platform engineers build open, portable, and resilient infrastructure. With a background spanning engineering, architecture, and product management, he distills complex topics — Kubernetes, observability, cloud-native security, and open source — into actionable insights. Active open source contributor and maintainer. When not on stage, he\'s a Rancher at heart, herding his sheep in the Netherlands.',
 
   /** SUSE role blurb used on the about page */
   suseRole:
