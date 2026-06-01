@@ -26,6 +26,7 @@ const related = allTalks
 
 
 const cfg = TYPE_CONFIG[talk.data.type];
+const isUpcoming = talk.data.date > new Date();
 const dateLabel = talk.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 const endDateLabel = talk.data.endDate?.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 const recordingLabel =
@@ -106,6 +107,11 @@ const jsonLd = {
         <span class:list={['inline-flex text-xs font-semibold px-2.5 py-1 rounded-full', cfg.classes]}>
           {cfg.label}
         </span>
+        {isUpcoming && (
+          <span class="inline-flex text-xs font-semibold px-2.5 py-1 rounded-full bg-persimmon/20 text-persimmon border border-persimmon/30">
+            Upcoming
+          </span>
+        )}
         <time datetime={talk.data.date.toISOString()} class="text-fog/80 text-sm">
           {dateLabel}{endDateLabel ? ` – ${endDateLabel}` : ''}
         </time>
@@ -151,11 +157,11 @@ const jsonLd = {
                 {recordingLabel}
               </a>
             </div>
-          ) : (
+          ) : !isUpcoming ? (
             <div class="rounded-xl border-2 border-dashed border-pine/10 dark:border-mint/10 p-6 text-center">
               <p class="text-sm text-pine/40 dark:text-fog/40">Recording not yet available</p>
             </div>
-          )}
+          ) : null}
 
           {talk.data.type !== 'podcast' && (
             talk.data.slides_url ? (
@@ -166,11 +172,19 @@ const jsonLd = {
                   View Slides ↗
                 </a>
               </div>
-            ) : (
+            ) : !isUpcoming ? (
               <div class="rounded-xl border-2 border-dashed border-pine/10 dark:border-mint/10 p-6 text-center">
                 <p class="text-sm text-pine/40 dark:text-fog/40">Slides not yet available</p>
               </div>
-            )
+            ) : null
+          )}
+
+          {isUpcoming && !talk.data.video_url && !talk.data.slides_url && (
+            <div class="rounded-xl border border-persimmon/20 bg-persimmon/5 dark:bg-persimmon/10 p-6">
+              <p class="text-sm text-pine/65 dark:text-fog/65">
+                Slides and recording will be shared here after the event.
+              </p>
+            </div>
           )}
         </div>
       </div>

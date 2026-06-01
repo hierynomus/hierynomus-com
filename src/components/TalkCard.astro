@@ -18,6 +18,8 @@ interface Props {
 const { title, event, date, type, tags, slug, slides_url, video_url, compact = false } = Astro.props;
 const cfg = TYPE_CONFIG[type];
 
+const isUpcoming = date > new Date();
+
 const videoLabel =
   type === 'podcast' ? '🎙 Listen' :
   type === 'webinar' ? '▶ Watch Webinar' :
@@ -37,11 +39,18 @@ const dateLabel = date.toLocaleDateString('en-GB', {
     compact ? 'p-4' : 'p-6',
   ]}
 >
-  <!-- Top row: type badge + date -->
+  <!-- Top row: type badge + upcoming badge + date -->
   <div class="flex items-center justify-between gap-3 mb-3">
-    <span class:list={['inline-flex text-xs font-semibold px-2.5 py-1 rounded-full', cfg.classes]}>
-      {cfg.label}
-    </span>
+    <div class="flex items-center gap-2">
+      <span class:list={['inline-flex text-xs font-semibold px-2.5 py-1 rounded-full', cfg.classes]}>
+        {cfg.label}
+      </span>
+      {isUpcoming && (
+        <span class="inline-flex text-xs font-semibold px-2.5 py-1 rounded-full bg-persimmon/15 text-persimmon border border-persimmon/25">
+          Upcoming
+        </span>
+      )}
+    </div>
     <time
       datetime={date.toISOString()}
       class="text-xs text-pine/70 dark:text-fog/70 whitespace-nowrap"

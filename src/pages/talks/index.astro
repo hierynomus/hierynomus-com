@@ -8,8 +8,12 @@ import { META } from '../../config/content';
 const allTalks = await getCollection('talks');
 const sorted = allTalks.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
-// Group by year, newest first
-const byYear = sorted.reduce<Record<number, typeof sorted>>((acc, talk) => {
+const now = new Date();
+const upcomingTalks = sorted.filter(t => t.data.date > now);
+const pastTalks = sorted.filter(t => t.data.date <= now);
+
+// Group past talks by year, newest first
+const byYear = pastTalks.reduce<Record<number, typeof pastTalks>>((acc, talk) => {
   const year = talk.data.date.getFullYear();
   (acc[year] ??= []).push(talk);
   return acc;
@@ -61,8 +65,35 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
         ))}
       </div>
 
-      <!-- Year-grouped talks -->
       <div id="talks-container">
+
+        <!-- Upcoming talks -->
+        {upcomingTalks.length > 0 && (
+          <div class="year-section mb-14" id="upcoming-section">
+            <h2 class="font-display text-2xl font-bold text-persimmon mb-6">
+              Upcoming
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {upcomingTalks.map(talk => (
+                <div data-talk-type={talk.data.type} class="talk-item">
+                  <TalkCard
+                    title={talk.data.title}
+                    event={talk.data.event}
+                    date={talk.data.date}
+                    endDate={talk.data.endDate}
+                    type={talk.data.type}
+                    tags={talk.data.tags}
+                    slug={talk.id}
+                    slides_url={talk.data.slides_url}
+                    video_url={talk.data.video_url}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Past talks grouped by year -->
         {yearGroups.map(({ year, talks }) => (
           <div class="year-section mb-14" data-year={year}>
             <h2 class="year-heading font-display text-2xl font-bold text-pine/30 dark:text-fog/25 mb-6 tabular-nums">
@@ -87,6 +118,7 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
             </div>
           </div>
         ))}
+
       </div>
 
       <!-- Empty state -->
