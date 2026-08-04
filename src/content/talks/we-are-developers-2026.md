@@ -1,11 +1,10 @@
 ---
 title: "Stop Running Mystery Meat in Production"
-event: "Cloud Native London"
-date: 2026-02-04
-type: meetup
+event: "WeAreDevelopers World Congress 2026 - North America"
+date: 2026-09-23
+type: conference
 tags: [containers, supply-chain-security, sbom, images, production]
-conference_url: https://www.meetup.com/cloud-native-london/events/310408638/
-video_url: https://www.youtube.com/live/ycjbonELfNw?si=UUHl54C0dv0z41Xe&t=702
+conference_url: https://www.wearedevelopers.com/world-congress-north-america
 featured: false
 ---
 
