@@ -1,0 +1,73 @@
+---
+---
+
+<!-- Tech-theme-only boot overlay. Rendered for every page load (cheap, ~40
+     lines of markup) but only ever made visible by its own script, and only
+     when the resolved theme is "tech" — corp visitors never see or pay for
+     it. -->
+<div
+  id="boot-sequence"
+  class="hidden fixed inset-0 z-[100] flex-col items-start justify-center gap-1 bg-pine px-6 font-sans text-sm text-jungle sm:px-12 sm:text-base"
+  aria-hidden="true"
+>
+  <p><span class="text-mint">$</span> ssh jeroen@hierynomus.com</p>
+  <p id="boot-line-1" class="opacity-0">Connecting&hellip; <span class="text-mint">OK</span></p>
+  <p id="boot-line-2" class="opacity-0">Loading profile&hellip; <span class="text-mint">OK</span></p>
+  <p id="boot-line-3" class="opacity-0">Welcome<span class="animate-pulse">_</span></p>
+</div>
+
+<script>
+  const OVERLAY_ID = 'boot-sequence';
+  const SESSION_KEY = 'boot-sequence-shown';
+  const LINE_DELAY_MS = 220;
+  const HOLD_MS = 500;
+
+  function play(full: boolean) {
+    const overlay = document.getElementById(OVERLAY_ID);
+    if (!overlay) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const lines = Array.from(overlay.querySelectorAll<HTMLElement>('p[id^="boot-line-"]'));
+
+    if (reduceMotion) {
+      // Respect reduced-motion: never show the overlay at all, just skip straight
+      // to end state (page content, already visible underneath).
+      return;
+    }
+
+    overlay.classList.remove('hidden');
+    overlay.classList.add('flex');
+    lines.forEach(line => { line.style.opacity = '0'; });
+
+    const lineCount = full ? lines.length : Math.min(2, lines.length);
+    lines.slice(0, lineCount).forEach((line, i) => {
+      setTimeout(() => { line.style.transition = 'opacity 120ms ease-out'; line.style.opacity = '1'; }, i * LINE_DELAY_MS);
+    });
+
+    const totalMs = lineCount * LINE_DELAY_MS + HOLD_MS;
+    setTimeout(() => {
+      overlay.style.transition = 'opacity 200ms ease-out';
+      overlay.style.opacity = '0';
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+        overlay.style.opacity = '';
+        overlay.style.transition = '';
+      }, 200);
+    }, totalMs);
+  }
+
+  function playIfTech(full: boolean) {
+    if (document.documentElement.dataset.siteTheme !== 'tech') return;
+    if (sessionStorage.getItem(SESSION_KEY)) return;
+    sessionStorage.setItem(SESSION_KEY, '1');
+    play(full);
+  }
+
+  // Initial load: full sequence, once per browser session.
+  playIfTech(true);
+
+  // Triggered by ThemeSwitcher.astro on an explicit corp -> tech click —
+  // short version, still session-gated so repeat toggles don't replay it.
+  document.addEventListener('site-theme:activated-tech', () => playIfTech(false));
+</script>

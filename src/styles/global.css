@@ -1,14 +1,17 @@
 @import "tailwindcss";
 
 /* Self-hosted fonts — avoids render-blocking external stylesheet from Google Fonts.
-   latin-only subsets; woff2 provided by @fontsource packages (already used by og.ts). */
-@import "@fontsource/inter/latin-400.css";
-@import "@fontsource/inter/latin-500.css";
-@import "@fontsource/inter/latin-600.css";
-@import "@fontsource/space-grotesk/latin-400.css";
-@import "@fontsource/space-grotesk/latin-500.css";
-@import "@fontsource/space-grotesk/latin-600.css";
-@import "@fontsource/space-grotesk/latin-700.css";
+   latin-only subsets. Note: @fontsource/inter and @fontsource/space-grotesk are
+   still npm dependencies (kept installed, not imported here) — src/lib/og.ts and
+   scripts/generate-favicons.js read their woff files directly from node_modules
+   for satori-rendered OG images/favicons, independent of this stylesheet. */
+@import "@fontsource/suse/latin-400.css";
+@import "@fontsource/suse/latin-500.css";
+@import "@fontsource/suse/latin-600.css";
+@import "@fontsource/suse/latin-700.css";
+@import "@fontsource/suse-mono/latin-400.css";
+@import "@fontsource/suse-mono/latin-500.css";
+@import "@fontsource/suse-mono/latin-700.css";
 
 @theme {
   /* SUSE Brand Colors */
@@ -21,12 +24,17 @@
   --color-pine: #0c322c;
 
   /* Typography */
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'SUSE', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'SUSE', ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Class-based dark mode — toggled on <html> via JS */
 @variant dark (&:where(.dark, .dark *));
+
+/* Site theme (visual identity) — independent of dark/light mode, toggled via
+   [data-site-theme] on <html> by ThemeSwitcher.astro. "corp" is the default,
+   unmarked state; "tech" is an alternate terminal-inspired skin. */
+@custom-variant tech (&:where([data-site-theme="tech"], [data-site-theme="tech"] *));
 
 @layer base {
   html {
@@ -42,16 +50,105 @@
   }
 }
 
+@layer components {
+  /* Shared hero background — corp default is the Stage Light gradient; the
+     tech theme overrides it below. Centralised so a theme only has to define
+     the look once instead of at each of the ~12 sections that use it. */
+  .hero-surface {
+    @apply relative overflow-hidden bg-gradient-to-br from-pine to-jungle;
+  }
+}
+
+/* ── Tech theme: token overrides ─────────────────────────────────────────── */
+/* Same brand-colour custom properties, repointed to a SUSE-tinted terminal
+   palette. Every utility (bg-pine, text-jungle, rounded-xl, shadow-lg,
+   font-sans…) compiles to var(--the-property), so this single block reskins
+   colour, type, corner radius and hover glow across the whole site with no
+   per-component changes. --color-midnight/--color-waterhole (podcast/webinar
+   badges) are deliberately left untouched — a reskin, not a repaint. */
+[data-site-theme="tech"] {
+  --color-pine: #041008;
+  --color-white: #f1f7f3;
+  --color-fog: #cdeade;
+  --color-jungle: #2fe08a;
+  --color-mint: #7ef2c2;
+
+  --font-sans: 'SUSE Mono', ui-monospace, monospace;
+  --font-display: 'SUSE Mono', ui-monospace, monospace;
+
+  --radius-lg: 0.1875rem;
+  --radius-xl: 0.25rem;
+  --radius-2xl: 0.3125rem;
+
+  --shadow-lg:
+    0 0 0 1px color-mix(in srgb, var(--color-jungle) 25%, transparent),
+    0 8px 24px -4px color-mix(in srgb, var(--color-jungle) 35%, transparent);
+}
+
+[data-site-theme="tech"] .hero-surface {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--color-jungle) 6%, transparent) 0px,
+      color-mix(in srgb, var(--color-jungle) 6%, transparent) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--color-jungle) 22%, transparent) 0%, transparent 60%),
+    var(--color-pine);
+}
+
+/* Command-prompt nav decoration — pure CSS, relies on the .nav-link hook
+   added to Nav.astro's links; no other markup change needed. */
+[data-site-theme="tech"] .nav-link::before {
+  content: '~/';
+  color: var(--color-jungle);
+  margin-right: 0.15em;
+}
+
+/* Selected-text and scrollbar polish — small, free-standing touches that
+   reinforce the terminal feel wherever the browser default would otherwise
+   leak corp-neutral grey/blue into an otherwise fully-reskinned page. */
+[data-site-theme="tech"] ::selection {
+  background: color-mix(in srgb, var(--color-jungle) 40%, transparent);
+  color: var(--color-pine);
+}
+
+[data-site-theme="tech"] {
+  scrollbar-color: var(--color-jungle) var(--color-pine);
+  scrollbar-width: thin;
+}
+
+[data-site-theme="tech"] ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+[data-site-theme="tech"] ::-webkit-scrollbar-track {
+  background: var(--color-pine);
+}
+
+[data-site-theme="tech"] ::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-jungle) 60%, transparent);
+  border: 2px solid var(--color-pine);
+}
+
 /* ── Accessibility: brand-colour contrast fixes ──────────────────────────── */
-/* jungle (#30ba78) is only 2.5:1 on white — darken to #1a7a4a (4.9:1) in light mode */
-html:not(.dark) .text-jungle {
-  color: #1a7a4a;
+/* jungle is only ~2.5–3:1 on a light background — darken per theme so
+   text-jungle clears WCAG AA (4.5:1) in both corp-light and tech-light. */
+html:not(.dark):not([data-site-theme="tech"]) .text-jungle {
+  color: #1a7a4a; /* corp jungle #30ba78 darkened → 4.9:1 on white */
+}
+
+html:not(.dark)[data-site-theme="tech"] .text-jungle {
+  color: #12633c; /* tech jungle #2fe08a darkened → 6.7:1 on tech-light bg */
 }
 
 /* CTA buttons: swap text-white to pine on jungle/persimmon backgrounds.
    Two-class specificity beats single-class .text-white without !important.
-   pine on jungle = 5.4:1 · pine on persimmon = 5.2:1 (WCAG AA) */
+   Uses var(--color-pine) so it tracks the active theme's ink colour instead
+   of a hardcoded corp value. */
 .bg-jungle.text-white,
 .bg-persimmon.text-white {
-  color: rgb(12 50 44); /* pine */
+  color: var(--color-pine);
 }

@@ -1,0 +1,62 @@
+---
+import { SITE, SOCIAL, TOPICS } from '../config/site';
+import { BIO } from '../config/content';
+
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+
+const bioLines = compact ? [BIO.tagline] : BIO.short;
+---
+
+<div class="hidden tech:block bg-pine border border-jungle/20 rounded-xl overflow-hidden">
+  <div class="flex items-center gap-2 border-b border-jungle/15 px-4 py-2">
+    <span class="flex gap-1">
+      <span class="w-2 h-2 rounded-full bg-persimmon/70"></span>
+      <span class="w-2 h-2 rounded-full bg-mint/50"></span>
+      <span class="w-2 h-2 rounded-full bg-jungle/70"></span>
+    </span>
+    <span class="text-xs text-fog/50">profile.yml</span>
+  </div>
+
+  <div class:list={['text-sm leading-relaxed', compact ? 'p-4' : 'p-5 sm:p-6']}>
+    <p class="text-mint mb-3"><span class="text-jungle">$</span> cat profile.yml</p>
+
+    <dl class="space-y-1 text-fog/85">
+      <div><span class="text-jungle/80">name:</span> "{SITE.name}"</div>
+      <div><span class="text-jungle/80">role:</span> "{SITE.title}"</div>
+      <div><span class="text-jungle/80">company:</span> "SUSE"</div>
+      <div><span class="text-jungle/80">location:</span> "{SITE.location}"</div>
+
+      {!compact && (
+        <div>
+          <span class="text-jungle/80">languages:</span>
+          {SITE.languages.map(lang => (
+            <div class="pl-4">- {lang}</div>
+          ))}
+        </div>
+      )}
+
+      {!compact && (
+        <div>
+          <span class="text-jungle/80">topics:</span>
+          {TOPICS.map(topic => (
+            <div class="pl-4">- {topic}</div>
+          ))}
+        </div>
+      )}
+
+      <div>
+        <span class="text-jungle/80">bio:</span> |
+        {bioLines.map(line => (
+          <p class="pl-4 mt-1 text-fog/70">{line}</p>
+        ))}
+      </div>
+
+      <div><span class="text-jungle/80">github:</span> "{SOCIAL.github}"</div>
+      {!compact && <div><span class="text-jungle/80">linkedin:</span> "{SOCIAL.linkedin}"</div>}
+    </dl>
+  </div>
+</div>

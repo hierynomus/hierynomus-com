@@ -14,7 +14,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
 >
 
   <!-- Header -->
-  <section class="bg-gradient-to-br from-pine to-jungle py-16 sm:py-20">
+  <section class="hero-surface py-16 sm:py-20">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <p class="text-mint text-xs font-semibold tracking-[0.2em] uppercase mb-3">Writing</p>
       <h1 class="font-display text-4xl sm:text-5xl font-bold text-white mb-4">Blog</h1>
@@ -45,12 +45,12 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
                   class="group flex flex-col sm:flex-row sm:items-start gap-4 py-8 hover:bg-fog/30 dark:hover:bg-white/5 -mx-4 px-4 rounded-xl transition-colors"
                 >
                   <!-- Date column -->
-                  <time
-                    datetime={post.data.date.toISOString()}
-                    class="shrink-0 text-sm text-pine/65 dark:text-fog/65 sm:w-36 sm:pt-0.5"
-                  >
-                    {dateLabel}
-                  </time>
+                  <div class="shrink-0 sm:w-36 sm:pt-0.5 flex items-baseline gap-1.5">
+                    <span class="hidden tech:inline text-fog/30 text-xs">-rw-r--r--</span>
+                    <time datetime={post.data.date.toISOString()} class="text-sm text-pine/65 dark:text-fog/65">
+                      {dateLabel}
+                    </time>
+                  </div>
 
                   <!-- Content column -->
                   <div class="flex-1 min-w-0">
@@ -71,6 +71,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
                           <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                         </svg>
                         {mins} min read
+                        <span class="hidden tech:inline text-fog/40">· {mins * 2}K</span>
                       </span>
 
                       <!-- Tags -->

@@ -1,0 +1,50 @@
+---
+---
+
+<!-- Tech-theme-only navigation progress bar. Present in every page load like
+     BootSequence.astro, but only ever shown by its own script when the
+     resolved theme is "tech". -->
+<div
+  id="nav-progress"
+  class="hidden tech:block fixed top-0 left-0 h-0.5 z-[200] bg-jungle pointer-events-none"
+  style="width: 0%; opacity: 0;"
+  aria-hidden="true"
+></div>
+
+<script>
+  const BAR_ID = 'nav-progress';
+
+  function isTech() {
+    return document.documentElement.dataset.siteTheme === 'tech';
+  }
+
+  function showBar() {
+    if (!isTech()) return;
+    const bar = document.getElementById(BAR_ID);
+    if (!bar) return;
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+    bar.style.opacity = '1';
+    // Force a reflow so the next transition actually animates from 0%.
+    void bar.offsetWidth;
+    bar.style.transition = 'width 6s cubic-bezier(0.1, 0.6, 0.2, 1)';
+    bar.style.width = '85%';
+  }
+
+  function hideBar() {
+    const bar = document.getElementById(BAR_ID);
+    if (!bar) return;
+    bar.style.transition = 'width 200ms ease-out';
+    bar.style.width = '100%';
+    setTimeout(() => {
+      bar.style.transition = 'opacity 200ms ease-out';
+      bar.style.opacity = '0';
+    }, 200);
+  }
+
+  // document persists across ClientRouter swaps, so a single listener here
+  // (no per-navigation rebinding) covers every navigation for the app's
+  // lifetime — see astro:before-preparation / astro:page-load lifecycle.
+  document.addEventListener('astro:before-preparation', showBar);
+  document.addEventListener('astro:page-load', hideBar);
+</script>

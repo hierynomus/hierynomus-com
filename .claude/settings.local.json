@@ -3,7 +3,14 @@
     "allow": [
       "mcp__Claude_in_Chrome__tabs_context_mcp",
       "Bash(mise exec *)",
-      "Bash(grep -v \"^\\\\s*$\")"
+      "Bash(grep -v \"^\\\\s*$\")",
+      "Bash(npx lighthouse *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(npm run *)",
+      "Bash(git fetch *)",
+      "Bash(git checkout *)"
     ]
   }
 }

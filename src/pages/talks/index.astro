@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import TalkCard from '../../components/TalkCard.astro';
+import TalkRow from '../../components/TalkRow.astro';
 import { TYPE_CONFIG } from '../../config/talks';
 import { META } from '../../config/content';
 
@@ -31,7 +32,7 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
 >
 
   <!-- Header -->
-  <section class="bg-gradient-to-br from-pine to-jungle py-16 sm:py-20">
+  <section class="hero-surface py-16 sm:py-20">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <p class="text-mint text-xs font-semibold tracking-[0.2em] uppercase mb-3">Speaking history</p>
       <h1 class="font-display text-4xl sm:text-5xl font-bold text-white mb-4">All Talks</h1>
@@ -46,23 +47,31 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
   <section class="py-14 bg-white dark:bg-pine min-h-screen">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <!-- Filter tabs -->
-      <div class="flex flex-wrap gap-2 mb-10" id="filter-tabs" role="tablist" aria-label="Filter talks by type">
-        {activeTypes.map(type => (
-          <button
-            role="tab"
-            data-type={type}
-            aria-selected={type === 'all' ? 'true' : 'false'}
-            class:list={[
-              'filter-tab px-4 py-1.5 rounded-full text-sm font-medium border transition-colors',
-              type === 'all'
-                ? 'bg-jungle text-white border-jungle'
-                : 'bg-white dark:bg-white/8 text-pine/65 dark:text-fog/65 border-pine/15 dark:border-mint/15 hover:border-jungle/40 dark:hover:border-mint/40',
-            ]}
-          >
-            {type === 'all' ? 'All' : TYPE_CONFIG[type]?.label ?? type}
-          </button>
-        ))}
+      <!-- Filter tabs + view toggle -->
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-10">
+        <div class="flex flex-wrap gap-2" id="filter-tabs" role="tablist" aria-label="Filter talks by type">
+          {activeTypes.map(type => (
+            <button
+              role="tab"
+              data-type={type}
+              aria-selected={type === 'all' ? 'true' : 'false'}
+              class:list={[
+                'filter-tab px-4 py-1.5 rounded-full text-sm font-medium border transition-colors',
+                type === 'all'
+                  ? 'bg-jungle text-white border-jungle'
+                  : 'bg-fog dark:bg-white/8 text-pine/65 dark:text-fog/65 border-pine/15 dark:border-mint/15 hover:border-jungle/40 dark:hover:border-mint/40',
+              ]}
+            >
+              {type === 'all' ? 'All' : TYPE_CONFIG[type]?.label ?? type}
+            </button>
+          ))}
+        </div>
+
+        <!-- View toggle — tech theme only -->
+        <div class="hidden tech:flex items-center gap-0.5 rounded-lg border border-jungle/20 p-0.5 font-sans text-xs" role="group" aria-label="Talk list view">
+          <button id="view-cards" type="button" aria-pressed="true" class="rounded-md px-2.5 py-1 transition-colors bg-jungle/15 text-jungle">Cards</button>
+          <button id="view-listing" type="button" aria-pressed="false" class="rounded-md px-2.5 py-1 transition-colors text-fog/50 hover:text-fog/80">ls -la</button>
+        </div>
       </div>
 
       <div id="talks-container">
@@ -73,20 +82,32 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
             <h2 class="font-display text-2xl font-bold text-persimmon mb-6">
               Upcoming
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="talk-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {upcomingTalks.map(talk => (
                 <div data-talk-type={talk.data.type} class="talk-item">
-                  <TalkCard
-                    title={talk.data.title}
-                    event={talk.data.event}
-                    date={talk.data.date}
-                    endDate={talk.data.endDate}
-                    type={talk.data.type}
-                    tags={talk.data.tags}
-                    slug={talk.id}
-                    slides_url={talk.data.slides_url}
-                    video_url={talk.data.video_url}
-                  />
+                  <div class="talk-card-repr">
+                    <TalkCard
+                      title={talk.data.title}
+                      event={talk.data.event}
+                      date={talk.data.date}
+                      endDate={talk.data.endDate}
+                      type={talk.data.type}
+                      tags={talk.data.tags}
+                      slug={talk.id}
+                      slides_url={talk.data.slides_url}
+                      video_url={talk.data.video_url}
+                    />
+                  </div>
+                  <div class="talk-row-repr hidden">
+                    <TalkRow
+                      title={talk.data.title}
+                      event={talk.data.event}
+                      date={talk.data.date}
+                      type={talk.data.type}
+                      tags={talk.data.tags}
+                      slug={talk.id}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -99,20 +120,32 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
             <h2 class="year-heading font-display text-2xl font-bold text-pine/30 dark:text-fog/25 mb-6 tabular-nums">
               {year}
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="talk-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {talks.map(talk => (
                 <div data-talk-type={talk.data.type} class="talk-item">
-                  <TalkCard
-                    title={talk.data.title}
-                    event={talk.data.event}
-                    date={talk.data.date}
-                    endDate={talk.data.endDate}
-                    type={talk.data.type}
-                    tags={talk.data.tags}
-                    slug={talk.id}
-                    slides_url={talk.data.slides_url}
-                    video_url={talk.data.video_url}
-                  />
+                  <div class="talk-card-repr">
+                    <TalkCard
+                      title={talk.data.title}
+                      event={talk.data.event}
+                      date={talk.data.date}
+                      endDate={talk.data.endDate}
+                      type={talk.data.type}
+                      tags={talk.data.tags}
+                      slug={talk.id}
+                      slides_url={talk.data.slides_url}
+                      video_url={talk.data.video_url}
+                    />
+                  </div>
+                  <div class="talk-row-repr hidden">
+                    <TalkRow
+                      title={talk.data.title}
+                      event={talk.data.event}
+                      date={talk.data.date}
+                      type={talk.data.type}
+                      tags={talk.data.tags}
+                      slug={talk.id}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -131,11 +164,42 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
 
 </Layout>
 
+<style>
+  /* Un-layered — beats Tailwind's @layer utilities (grid-cols-*) regardless
+     of source order, so the listing view can collapse the responsive card
+     grid down to a single stacked column without fighting specificity. */
+  #talks-container.is-listing .talk-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+</style>
+
 <script>
   const tabs = document.querySelectorAll<HTMLButtonElement>('.filter-tab');
   const items = document.querySelectorAll<HTMLElement>('.talk-item');
   const sections = document.querySelectorAll<HTMLElement>('.year-section');
   const empty = document.getElementById('empty-state');
+  const container = document.getElementById('talks-container');
+  const viewCardsBtn = document.getElementById('view-cards');
+  const viewListingBtn = document.getElementById('view-listing');
+
+  function setView(listing: boolean) {
+    container?.classList.toggle('is-listing', listing);
+    viewCardsBtn?.setAttribute('aria-pressed', String(!listing));
+    viewListingBtn?.setAttribute('aria-pressed', String(listing));
+    viewCardsBtn?.classList.toggle('bg-jungle/15', !listing);
+    viewCardsBtn?.classList.toggle('text-jungle', !listing);
+    viewCardsBtn?.classList.toggle('text-fog/50', listing);
+    viewListingBtn?.classList.toggle('bg-jungle/15', listing);
+    viewListingBtn?.classList.toggle('text-jungle', listing);
+    viewListingBtn?.classList.toggle('text-fog/50', !listing);
+    document.querySelectorAll<HTMLElement>('.talk-card-repr').forEach(el => el.classList.toggle('hidden', listing));
+    document.querySelectorAll<HTMLElement>('.talk-row-repr').forEach(el => el.classList.toggle('hidden', !listing));
+  }
+
+  viewCardsBtn?.addEventListener('click', () => setView(false));
+  viewListingBtn?.addEventListener('click', () => setView(true));
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
@@ -148,7 +212,7 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
         t.classList.toggle('bg-jungle', active);
         t.classList.toggle('text-white', active);
         t.classList.toggle('border-jungle', active);
-        t.classList.toggle('bg-white', !active);
+        t.classList.toggle('bg-fog', !active);
         t.classList.toggle('dark:bg-white/8', !active);
         t.classList.toggle('text-pine/65', !active);
         t.classList.toggle('dark:text-fog/65', !active);

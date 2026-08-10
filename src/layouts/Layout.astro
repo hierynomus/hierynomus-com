@@ -2,6 +2,9 @@
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import BootSequence from '../components/BootSequence.astro';
+import NavProgress from '../components/NavProgress.astro';
+import CommandPalette from '../components/CommandPalette.astro';
 import { SITE, SOCIAL } from '../config/site';
 import { ClientRouter } from 'astro:transitions';
 
@@ -57,7 +60,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
     <ClientRouter />
 
-    <!-- Dark mode: run before paint to prevent flash on first load -->
+    <!-- Dark mode + site theme: run before paint to prevent flash on first load -->
     <script is:inline>
       (function () {
         const stored = localStorage.getItem('theme');
@@ -65,23 +68,38 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         if (stored === 'dark' || (!stored && prefersDark)) {
           document.documentElement.classList.add('dark');
         }
+
+        const storedSiteTheme = localStorage.getItem('site-theme');
+        if (storedSiteTheme === 'tech') {
+          document.documentElement.dataset.siteTheme = 'tech';
+        }
       })();
     </script>
 
-    <!-- Dark mode: persist across ClientRouter navigations.
+    <!-- Dark mode + site theme: persist across ClientRouter navigations.
          astro:before-swap fires before the DOM is replaced, giving us
-         access to event.newDocument so we can add .dark before first paint. -->
+         access to event.newDocument so we can apply both before first paint. -->
     <script>
       document.addEventListener('astro:before-swap', (e) => {
+        const newHtml = (e as TransitionBeforeSwapEvent).newDocument.documentElement;
+
         const stored = localStorage.getItem('theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (stored === 'dark' || (!stored && prefersDark)) {
-          (e as TransitionBeforeSwapEvent).newDocument.documentElement.classList.add('dark');
+          newHtml.classList.add('dark');
+        }
+
+        const storedSiteTheme = localStorage.getItem('site-theme');
+        if (storedSiteTheme === 'tech') {
+          newHtml.dataset.siteTheme = 'tech';
         }
       });
     </script>
   </head>
   <body class="min-h-screen bg-white dark:bg-pine text-pine dark:text-fog transition-colors duration-200">
+    <NavProgress />
+    <BootSequence />
+    <CommandPalette />
     <Nav />
     <main>
       <slot />

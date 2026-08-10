@@ -28,7 +28,7 @@ const pageUrl = new URL(`/blog/${post.id}`, Astro.site ?? SITE.url).toString();
 <Layout title={post.data.title} description={post.data.description} ogImage={`/og/blog/${post.id}.png`}>
 
   <!-- Header -->
-  <section class="bg-gradient-to-br from-pine to-jungle pt-16 pb-12 sm:pt-20">
+  <section class="hero-surface pt-16 pb-12 sm:pt-20">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <a
         href="/blog"

@@ -1,0 +1,32 @@
+---
+import { TYPE_CONFIG } from '../config/talks';
+import type { TalkType } from '../config/talks';
+
+interface Props {
+  title: string;
+  event: string;
+  date: Date;
+  type: TalkType;
+  tags: string[];
+  slug: string;
+}
+
+const { title, event, date, type, tags, slug } = Astro.props;
+const cfg = TYPE_CONFIG[type];
+
+const dateLabel = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+const year = date.getFullYear();
+// Decorative stand-in for a file size — deterministic from the title so it
+// doesn't jitter between renders, not meant to represent anything real.
+const size = `${(title.length % 9) + 1}.${(title.length * 3) % 10}K`;
+---
+
+<a
+  href={`/talks/${slug}`}
+  class="group flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3 px-3 py-2 rounded hover:bg-jungle/10 transition-colors font-sans text-sm"
+>
+  <span class="text-fog/40 whitespace-nowrap shrink-0">-rw-r--r-- 1 jeroen speakers {size}</span>
+  <span class="text-fog/50 whitespace-nowrap shrink-0">{dateLabel} {year}</span>
+  <span class="text-mint group-hover:text-jungle transition-colors whitespace-nowrap shrink-0">{slug}.talk</span>
+  <span class="text-fog/40 text-xs truncate"># {title} — {event} [{cfg.label.toLowerCase()}]{tags.length > 0 && ` ${tags.map(t => `#${t}`).join(' ')}`}</span>
+</a>
