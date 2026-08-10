@@ -1,6 +1,6 @@
 ---
 title: "Beyond the YAML: Architecting a Composable, Secure, and Open Source Platform for the Enterprise"
-event: "KubeCon NA 2025"
+event: "KubeCon + CloudNativeCon North America 2025"
 date: 2025-11-11
 type: conference
 tags: [platform-engineering, kubernetes, security, open-source, composability, enterprise]

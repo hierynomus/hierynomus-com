@@ -8,6 +8,9 @@ tags: [digital-sovereignty, cloud-native, open-source, kubernetes, security, pla
 conference_url: https://2026.cloudnativedays.no
 featured: true
 bookable: true
+co_presenters:
+  - name: Andrés Valero
+    url: https://andresvalero.tech
 ---
 
 Digital sovereignty is dominating boardroom conversations across Europe. However, it's being built, or broken, in pull requests. Every managed service you adopt, every proprietary SDK you reach for, every platform decision made for convenience over portability: these are sovereignty decisions, and they're being made by developers and platform engineers every single day.

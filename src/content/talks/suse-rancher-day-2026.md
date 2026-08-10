@@ -1,10 +1,12 @@
 ---
 title: "SUSE Rancher Day 2026"
-event: "KubeCon EU 2026"
+event: "KubeCon + CloudNativeCon Europe 2026"
 date: 2026-03-01
 type: workshop
 tags: [rancher, kubernetes, suse]
 featured: false
+co_presenters:
+  - name: Erin Quill
 ---
 
 Join us the day before KubeCon + CloudNativeCon Europe starts for a half-day, hands-on technical workshop designed for Platform Engineers, DevOps practitioners, SREs etc.

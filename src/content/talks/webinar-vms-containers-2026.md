@@ -8,6 +8,7 @@ featured: false
 co_presenters:
   - name: Ivan Tarin
   - name: Andrés Valero
+    url: https://andresvalero.tech
 ---
 
 ## A live introduction to SUSE Virtualization for teams already running SUSE who are ready to bring VMs into their Kubernetes world

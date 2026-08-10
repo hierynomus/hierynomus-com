@@ -1,6 +1,6 @@
 ---
 title: "Cloud-Native Hardening Beyond Defaults: Secure Hosting for Mission-Critical Workloads"
-event: "KubeCon EU 2026"
+event: "KubeCon + CloudNativeCon Europe 2026"
 date: 2026-03-25
 endDate: 2026-03-26
 type: conference
