@@ -80,10 +80,24 @@ const currentPath = Astro.url.pathname;
         </button>
         <ThemeSwitcher />
         <ThemeToggle />
+        <a
+          href="/#contact"
+          class="tech:hidden shrink-0 whitespace-nowrap bg-persimmon hover:bg-persimmon/90 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+        >
+          Get in Touch
+        </a>
       </nav>
 
       <!-- Mobile controls -->
       <div class="flex md:hidden items-center gap-2">
+        <button
+          id="command-palette-trigger"
+          type="button"
+          class="hidden tech:flex items-center gap-1 text-xs text-fog/50 border border-fog/15 rounded-lg px-2 py-1.5 hover:text-jungle hover:border-jungle/40 transition-colors"
+          aria-label="Open command palette"
+        >
+          <span aria-hidden="true">⌘K</span>
+        </button>
         <ThemeSwitcher />
         <ThemeToggle />
         <button
@@ -113,6 +127,12 @@ const currentPath = Astro.url.pathname;
           {link.label}
         </a>
       ))}
+      <a
+        href="/#contact"
+        class="tech:hidden block mt-3 bg-persimmon hover:bg-persimmon/90 text-white text-sm font-semibold px-4 py-2.5 rounded-lg text-center transition-colors"
+      >
+        Get in Touch
+      </a>
 
       <!-- Mobile social icons -->
       <div class="flex items-center gap-1 pt-2 border-t border-pine/10 dark:border-mint/10 mt-2">
@@ -150,10 +170,11 @@ const currentPath = Astro.url.pathname;
   const close = document.getElementById('close-icon');
 
   btn?.addEventListener('click', () => {
-    const isOpen = !menu?.classList.contains('hidden');
-    menu?.classList.toggle('hidden');
-    hamburger?.classList.toggle('hidden', !isOpen ? false : false);
-    close?.classList.toggle('hidden');
-    btn.setAttribute('aria-expanded', String(!isOpen));
+    const wasOpen = !menu?.classList.contains('hidden');
+    const willOpen = !wasOpen;
+    menu?.classList.toggle('hidden', !willOpen);
+    hamburger?.classList.toggle('hidden', willOpen);
+    close?.classList.toggle('hidden', !willOpen);
+    btn.setAttribute('aria-expanded', String(willOpen));
   });
 </script>

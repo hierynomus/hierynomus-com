@@ -1,10 +1,9 @@
 @import "tailwindcss";
 
 /* Self-hosted fonts — avoids render-blocking external stylesheet from Google Fonts.
-   latin-only subsets. Note: @fontsource/inter and @fontsource/space-grotesk are
-   still npm dependencies (kept installed, not imported here) — src/lib/og.ts and
-   scripts/generate-favicons.js read their woff files directly from node_modules
-   for satori-rendered OG images/favicons, independent of this stylesheet. */
+   latin-only subsets. src/lib/og.ts and scripts/generate-favicons.js read the
+   @fontsource/suse woff file directly from node_modules for satori-rendered
+   OG images/favicons, independent of this stylesheet. */
 @import "@fontsource/suse/latin-400.css";
 @import "@fontsource/suse/latin-500.css";
 @import "@fontsource/suse/latin-600.css";

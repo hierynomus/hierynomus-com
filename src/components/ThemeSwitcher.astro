@@ -25,24 +25,7 @@
 </div>
 
 <script>
-  function setSiteTheme(theme: 'corp' | 'tech') {
-    const wasTech = document.documentElement.dataset.siteTheme === 'tech';
-    if (theme === 'tech') {
-      document.documentElement.dataset.siteTheme = 'tech';
-    } else {
-      delete document.documentElement.dataset.siteTheme;
-    }
-    localStorage.setItem('site-theme', theme);
-
-    document.querySelectorAll<HTMLButtonElement>('#theme-switch-corp, #theme-switch-tech').forEach(btn => {
-      const isThisOne = btn.id === `theme-switch-${theme}`;
-      btn.setAttribute('aria-pressed', String(isThisOne));
-    });
-
-    if (theme === 'tech' && !wasTech) {
-      document.dispatchEvent(new CustomEvent('site-theme:activated-tech'));
-    }
-  }
+  import { isTechTheme, setSiteTheme } from '../lib/theme';
 
   function initThemeSwitcher() {
     // Nav.astro renders this component twice (desktop + mobile controls),
@@ -50,7 +33,7 @@
     // one visible on the current viewport may go dead.
     const corpBtns = document.querySelectorAll<HTMLButtonElement>('#theme-switch-corp');
     const techBtns = document.querySelectorAll<HTMLButtonElement>('#theme-switch-tech');
-    const current = document.documentElement.dataset.siteTheme === 'tech' ? 'tech' : 'corp';
+    const current = isTechTheme() ? 'tech' : 'corp';
 
     corpBtns.forEach((corpBtn, i) => {
       const techBtn = techBtns[i];

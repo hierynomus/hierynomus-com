@@ -3,23 +3,26 @@
 
 <!-- Tech-theme-only navigation progress bar. Present in every page load like
      BootSequence.astro, but only ever shown by its own script when the
-     resolved theme is "tech". -->
+     resolved theme is "tech". transition:persist keeps this exact element
+     (not a fresh swapped-in copy) alive across a navigation, since showBar()
+     and hideBar() need to operate on the same node for the animation to
+     actually complete instead of being reset mid-flight by the swap. -->
 <div
   id="nav-progress"
+  transition:persist
   class="hidden tech:block fixed top-0 left-0 h-0.5 z-[200] bg-jungle pointer-events-none"
   style="width: 0%; opacity: 0;"
   aria-hidden="true"
 ></div>
 
 <script>
+  import { isTechTheme } from '../lib/theme';
+
   const BAR_ID = 'nav-progress';
 
-  function isTech() {
-    return document.documentElement.dataset.siteTheme === 'tech';
-  }
-
   function showBar() {
-    if (!isTech()) return;
+    if (!isTechTheme()) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const bar = document.getElementById(BAR_ID);
     if (!bar) return;
     bar.style.transition = 'none';

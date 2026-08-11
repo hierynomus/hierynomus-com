@@ -17,6 +17,8 @@
 </div>
 
 <script>
+  import { isTechTheme, TECH_ACTIVATED_EVENT } from '../lib/theme';
+
   const OVERLAY_ID = 'boot-sequence';
   const SESSION_KEY = 'boot-sequence-shown';
   const LINE_DELAY_MS = 220;
@@ -58,7 +60,7 @@
   }
 
   function playIfTech(full: boolean) {
-    if (document.documentElement.dataset.siteTheme !== 'tech') return;
+    if (!isTechTheme()) return;
     if (sessionStorage.getItem(SESSION_KEY)) return;
     sessionStorage.setItem(SESSION_KEY, '1');
     play(full);
@@ -67,7 +69,7 @@
   // Initial load: full sequence, once per browser session.
   playIfTech(true);
 
-  // Triggered by ThemeSwitcher.astro on an explicit corp -> tech click —
+  // Triggered by theme.ts's setSiteTheme() on an explicit corp -> tech click —
   // short version, still session-gated so repeat toggles don't replay it.
-  document.addEventListener('site-theme:activated-tech', () => playIfTech(false));
+  document.addEventListener(TECH_ACTIVATED_EVENT, () => playIfTech(false));
 </script>
