@@ -46,7 +46,6 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
                 >
                   <!-- Date column -->
                   <div class="shrink-0 sm:w-36 sm:pt-0.5 flex items-baseline gap-1.5">
-                    <span class="hidden tech:inline text-fog/30 text-xs">-rw-r--r--</span>
                     <time datetime={post.data.date.toISOString()} class="text-sm text-pine/65 dark:text-fog/65">
                       {dateLabel}
                     </time>
@@ -71,7 +70,6 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
                           <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                         </svg>
                         {mins} min read
-                        <span class="hidden tech:inline text-fog/40">· {mins * 2}K</span>
                       </span>
 
                       <!-- Tags -->

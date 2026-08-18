@@ -1,0 +1,329 @@
+---
+import { getCollection } from 'astro:content';
+import ExperimentLayout from './ExperimentLayout.astro';
+import ThemeSwitcher from '../components/ThemeSwitcher.astro';
+import BootSequence from '../components/BootSequence.astro';
+import NavProgress from '../components/NavProgress.astro';
+import CommandPalette from '../components/CommandPalette.astro';
+
+interface Crumb {
+  label: string;
+  href?: string; // omitted for the current page (last crumb is always current)
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Identifies which sidebar row (if any) is "open" — see the id scheme
+   * used across /dev pages, e.g. 'readme', 'talk:kubecon-eu-2026', 'about'. */
+  activeFile: string;
+  breadcrumb: Crumb[];
+}
+
+const { title, description, activeFile, breadcrumb } = Astro.props;
+
+const [talks, posts, projects] = await Promise.all([
+  getCollection('talks'),
+  getCollection('blog', ({ data }) => !data.draft),
+  getCollection('projects'),
+]);
+
+const allTalks = talks.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const recentTalks = allTalks.slice(0, 6);
+const totalTalks = allTalks.length;
+const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
+
+const recentPosts = posts
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 4);
+
+function itemClasses(id: string): string {
+  const active = id === activeFile;
+  return [
+    'sidebar-item flex items-center gap-1.5 px-6 py-1 hover:text-mint hover:bg-jungle/10 transition-colors truncate',
+    active ? 'text-mint bg-jungle/10' : 'text-fog/75',
+  ].join(' ');
+}
+
+// The tab bar is enhanced into real, closable, cross-page tabs by client JS
+// (sessionStorage-backed — see the script below); this is just the id/label/
+// href for the *current* page, embedded as inert JSON data for that script
+// to read on every load. The breadcrumb prop's last entry already carries
+// exactly the label needed ("kubecon-eu-2026.talk", "about.md", etc.).
+const currentTab = {
+  id: activeFile,
+  label: breadcrumb[breadcrumb.length - 1]?.label ?? activeFile,
+  href: Astro.url.pathname,
+};
+---
+
+<ExperimentLayout title={title} description={description} enableCorpRedirect>
+  <div class="h-screen flex flex-col font-sans text-sm">
+
+    <!-- Title bar -->
+    <div class="flex items-center justify-between h-9 px-3 border-b border-jungle/15 shrink-0">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="flex gap-1.5 shrink-0">
+          <span class="w-2.5 h-2.5 rounded-full bg-persimmon/70"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-mint/50"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-jungle/70"></span>
+        </span>
+        <span class="text-fog/50 text-xs truncate">jeroen-van-erp — hierynomus.com</span>
+      </div>
+      <ThemeSwitcher />
+    </div>
+
+    <div class="flex flex-1 min-h-0">
+
+      <!-- Sidebar: file tree -->
+      <aside class="hidden md:flex w-64 shrink-0 border-r border-jungle/15 flex-col overflow-y-auto py-3">
+        <a href="/dev" class="px-3 text-jungle/70 text-xs mb-2 hover:text-mint transition-colors">~/jeroen-van-erp</a>
+
+        <a href="/dev/talks" class="flex items-center gap-1.5 px-3 py-1 text-fog/50 text-xs mt-3 mb-1 hover:text-mint transition-colors">▾ talks/</a>
+        {recentTalks.map(talk => (
+          <a href={`/dev/talks/${talk.id}`} class={itemClasses(`talk:${talk.id}`)}>
+            <span class="text-jungle/60 shrink-0">·</span>
+            <span class="truncate">{talk.id}.talk</span>
+          </a>
+        ))}
+        <a href="/dev/talks" class={itemClasses('talks-index') + ' text-fog/40'}>… all {totalTalks}</a>
+
+        <a href="/dev/blog" class={itemClasses('blog-index').replace('px-6', 'px-3') + ' text-xs mt-3 mb-1'}>▾ blog/</a>
+        {recentPosts.length > 0 ? recentPosts.map(post => (
+          <a href={`/dev/blog/${post.id}`} class={itemClasses(`post:${post.id}`)}>
+            <span class="text-jungle/60 shrink-0">·</span>
+            <span class="truncate">{post.id}.md</span>
+          </a>
+        )) : (
+          <p class="px-6 py-1 text-fog/30 italic">empty</p>
+        )}
+
+        <p class="px-3 text-fog/50 text-xs mt-3 mb-1">▾ projects/</p>
+        {projects.map(project => (
+          <a
+            href={project.data.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-1.5 px-6 py-1 text-fog/75 hover:text-mint hover:bg-jungle/10 transition-colors truncate"
+          >
+            <span class="text-jungle/60 shrink-0">·</span>
+            <span class="truncate">{project.data.name}.git</span>
+          </a>
+        ))}
+
+        <div class="mt-3 pt-3 border-t border-jungle/10">
+          <a href="/dev/about" class={itemClasses('about').replace('px-6', 'px-3')}>
+            <span class="text-persimmon/70 shrink-0">▤</span> about.md
+          </a>
+          <a href="/dev/topics" class={itemClasses('topics-index').replace('px-6', 'px-3')}>
+            <span class="text-persimmon/70 shrink-0">▤</span> topics.md
+          </a>
+          <a href="/dev/writing" class={itemClasses('writing-index').replace('px-6', 'px-3')}>
+            <span class="text-persimmon/70 shrink-0">▤</span> writing.md
+          </a>
+          <a href="/dev#contact" class="flex items-center gap-1.5 px-3 py-1 text-fog/75 hover:text-mint hover:bg-jungle/10 transition-colors">
+            <span class="text-persimmon/70 shrink-0">▤</span> contact.md
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main pane -->
+      <div class="flex-1 flex flex-col min-w-0">
+
+        <!-- Real, closable, cross-page tab strip. Rendered here as a single
+             "current file" tab (matches the previous breadcrumb, and is what
+             shows if JS is unavailable); client JS enhances it into the full
+             session's open-tab list on load — see the script at the bottom
+             of this file. -->
+        <div id="tab-bar" transition:persist class="flex items-center h-9 border-b border-jungle/15 text-xs overflow-x-auto shrink-0">
+          <div class="flex items-center gap-2 px-4 h-full border-r border-jungle/15 bg-jungle/10 text-mint shrink-0">
+            <span class="text-persimmon/70">▤</span>
+            <span>{currentTab.label}</span>
+          </div>
+        </div>
+        <script is:inline type="application/json" id="current-file-data" set:html={JSON.stringify(currentTab).replace(/</g, '\\u003c')} />
+
+        <main class="flex-1 overflow-y-auto px-6 sm:px-12 py-10">
+          <div class="max-w-3xl">
+            <slot />
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Status bar -->
+    <div class="flex items-center justify-between h-6 px-3 bg-jungle text-pine text-xs shrink-0">
+      <div class="flex items-center gap-4">
+        <span>⎇ speaking-2026</span>
+        <span class="hidden sm:inline">UTF-8</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span>Talks: {totalTalks}</span>
+        <span class="hidden sm:inline">Events: {uniqueEvents}</span>
+        <span>Job: Technology Advocate @ SUSE</span>
+      </div>
+    </div>
+  </div>
+
+  <NavProgress />
+  <BootSequence />
+  <CommandPalette />
+
+  <script>
+    // Real cross-page tabs: /dev pages are genuine separate navigations (no
+    // client-side routing — see the plan notes on ShellLayout), so "which
+    // tabs are open" is tracked in sessionStorage rather than in-memory JS
+    // state, and rebuilt fresh on every load. This also has to re-run after
+    // every ClientRouter swap (not just the first load), hence the
+    // astro:page-load rebind — same pattern used by ThemeSwitcher/CommandPalette.
+    type Tab = { id: string; label: string; href: string };
+
+    const STORAGE_KEY = 'dev-shell-tabs';
+    const PINNED: Tab = { id: 'readme', label: 'README.md', href: '/dev' };
+    // Keeps the strip from ever needing its own horizontal scrollbar at
+    // typical widths — pinned README + up to 5 more, oldest evicted first.
+    const MAX_TABS = 6;
+
+    function readTabs(): Tab[] {
+      try {
+        const parsed = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? 'null');
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch {
+        // fall through to default below
+      }
+      return [PINNED];
+    }
+
+    const ACTIVE_CLASSES = ['bg-jungle/10', 'text-mint', 'border-jungle/15'];
+    const INACTIVE_CLASSES = ['text-fog/40', 'hover:text-fog/70', 'border-jungle/10', 'transition-colors'];
+
+    function setTabActive(el: HTMLElement, isActive: boolean) {
+      el.classList.remove(...ACTIVE_CLASSES, ...INACTIVE_CLASSES);
+      el.classList.add(...(isActive ? ACTIVE_CLASSES : INACTIVE_CLASSES));
+      if (isActive) el.setAttribute('aria-current', 'page');
+      else el.removeAttribute('aria-current');
+      const icon = el.querySelector<HTMLElement>('[data-tab-icon]');
+      if (icon) {
+        icon.classList.toggle('text-persimmon/70', isActive);
+        icon.classList.toggle('text-jungle/50', !isActive);
+      }
+    }
+
+    // Always an <a>, even for the active tab — so the fast re-render path
+    // in renderTabs() can flip which tab is "active" purely by toggling
+    // classes/aria-current, without ever needing to swap element type
+    // (an inactive tab that lost its clickable <a> would be stuck inert).
+    function buildTabEl(tab: Tab, isActive: boolean, tabs: Tab[]): HTMLAnchorElement {
+      const isPinned = tab.id === PINNED.id;
+      const el = document.createElement('a');
+      el.href = tab.href;
+      el.dataset.tabId = tab.id;
+      el.className = [
+        // shrink-0 keeps every tab a stable height, but the tab itself
+        // still needs its own max-width + min-w-0 so a long slug (e.g.
+        // "webinar-vms-containers-2026.talk") truncates instead of forcing
+        // the whole strip wider — MAX_TABS alone isn't enough once labels
+        // vary in length.
+        'flex items-center gap-2 px-4 h-full border-r shrink-0 min-w-0 max-w-[10rem]',
+        ...(isActive ? ACTIVE_CLASSES : INACTIVE_CLASSES),
+      ].join(' ');
+      el.title = tab.label;
+
+      const icon = document.createElement('span');
+      icon.dataset.tabIcon = '1';
+      icon.className = 'shrink-0 ' + (isActive ? 'text-persimmon/70' : 'text-jungle/50');
+      icon.textContent = isPinned ? '▤' : '·';
+      el.appendChild(icon);
+
+      const label = document.createElement('span');
+      label.className = 'truncate';
+      label.textContent = tab.label;
+      el.appendChild(label);
+
+      if (!isPinned) {
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = '×';
+        closeBtn.setAttribute('aria-label', `Close ${tab.label}`);
+        closeBtn.className = 'ml-1 shrink-0 text-fog/30 hover:text-persimmon transition-colors';
+        closeBtn.addEventListener('click', e => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Read the active tab at click-time (activeIdRef), not the
+          // `isActive` this closure was built with — the fast render path
+          // can change which tab is active without rebuilding this element.
+          const updated = tabs.filter(t => t.id !== tab.id);
+          sessionStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+          if (tab.id === activeIdRef) {
+            const idx = tabs.findIndex(t => t.id === tab.id);
+            const fallback = updated[Math.max(0, idx - 1)] ?? PINNED;
+            location.assign(fallback.href);
+          } else {
+            renderTabs(updated, activeIdRef);
+          }
+        });
+        el.appendChild(closeBtn);
+      }
+
+      return el;
+    }
+
+    // Tracks whichever tab is currently marked active, so a close-button
+    // handler built during an earlier render (closure over a stale
+    // `activeId`) still reports the right fallback/rebuild target after
+    // the fast path below has since changed which tab is active.
+    let activeIdRef = '';
+
+    function renderTabs(tabs: Tab[], activeId: string) {
+      activeIdRef = activeId;
+      const container = document.getElementById('tab-bar');
+      if (!container) return;
+
+      // Fast path: the tab bar persists across ClientRouter swaps
+      // (transition:persist), so on most navigations the open-tab set
+      // hasn't changed at all — only which one is active has. Patch the
+      // existing elements' active/inactive state in place instead of
+      // tearing down and rebuilding every tab's DOM subtree.
+      const existing = Array.from(container.children) as HTMLElement[];
+      const sameSet =
+        existing.length === tabs.length && existing.every((el, i) => el.dataset.tabId === tabs[i].id);
+      if (sameSet) {
+        existing.forEach((el, i) => setTabActive(el, tabs[i].id === activeId));
+        return;
+      }
+
+      container.innerHTML = '';
+      tabs.forEach(tab => container.appendChild(buildTabEl(tab, tab.id === activeId, tabs)));
+    }
+
+    function initTabBar() {
+      const dataEl = document.getElementById('current-file-data');
+      if (!dataEl) return;
+
+      let current: Tab;
+      try {
+        current = JSON.parse(dataEl.textContent ?? '{}');
+      } catch {
+        return;
+      }
+      if (!current.id) return;
+
+      const tabs = readTabs();
+      if (!tabs.some(t => t.id === current.id)) {
+        tabs.push(current);
+        // Evict the oldest closable tab (never the pinned README, never the
+        // one just opened) until back under the cap.
+        while (tabs.length > MAX_TABS) {
+          const evictIdx = tabs.findIndex(t => t.id !== PINNED.id && t.id !== current.id);
+          if (evictIdx === -1) break;
+          tabs.splice(evictIdx, 1);
+        }
+      }
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(tabs));
+
+      renderTabs(tabs, current.id);
+    }
+
+    initTabBar();
+    document.addEventListener('astro:page-load', initTabBar);
+  </script>
+</ExperimentLayout>

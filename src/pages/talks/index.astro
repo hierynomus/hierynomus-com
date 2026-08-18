@@ -2,7 +2,6 @@
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import TalkCard from '../../components/TalkCard.astro';
-import TalkRow from '../../components/TalkRow.astro';
 import { TYPE_CONFIG } from '../../config/talks';
 import { META } from '../../config/content';
 
@@ -67,11 +66,6 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
           ))}
         </div>
 
-        <!-- View toggle — tech theme only -->
-        <div class="hidden tech:flex items-center gap-0.5 rounded-lg border border-jungle/20 p-0.5 font-sans text-xs" role="group" aria-label="Talk list view">
-          <button id="view-cards" type="button" aria-pressed="true" class="rounded-md px-2.5 py-1 transition-colors bg-jungle/15 text-jungle">Cards</button>
-          <button id="view-listing" type="button" aria-pressed="false" class="rounded-md px-2.5 py-1 transition-colors text-fog/50 hover:text-fog/80">ls -la</button>
-        </div>
       </div>
 
       <div id="talks-container">
@@ -85,29 +79,17 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
             <div class="talk-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {upcomingTalks.map(talk => (
                 <div data-talk-type={talk.data.type} class="talk-item">
-                  <div class="talk-card-repr">
-                    <TalkCard
-                      title={talk.data.title}
-                      event={talk.data.event}
-                      date={talk.data.date}
-                      endDate={talk.data.endDate}
-                      type={talk.data.type}
-                      tags={talk.data.tags}
-                      slug={talk.id}
-                      slides_url={talk.data.slides_url}
-                      video_url={talk.data.video_url}
-                    />
-                  </div>
-                  <div class="talk-row-repr hidden">
-                    <TalkRow
-                      title={talk.data.title}
-                      event={talk.data.event}
-                      date={talk.data.date}
-                      type={talk.data.type}
-                      tags={talk.data.tags}
-                      slug={talk.id}
-                    />
-                  </div>
+                  <TalkCard
+                    title={talk.data.title}
+                    event={talk.data.event}
+                    date={talk.data.date}
+                    endDate={talk.data.endDate}
+                    type={talk.data.type}
+                    tags={talk.data.tags}
+                    slug={talk.id}
+                    slides_url={talk.data.slides_url}
+                    video_url={talk.data.video_url}
+                  />
                 </div>
               ))}
             </div>
@@ -123,29 +105,17 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
             <div class="talk-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {talks.map(talk => (
                 <div data-talk-type={talk.data.type} class="talk-item">
-                  <div class="talk-card-repr">
-                    <TalkCard
-                      title={talk.data.title}
-                      event={talk.data.event}
-                      date={talk.data.date}
-                      endDate={talk.data.endDate}
-                      type={talk.data.type}
-                      tags={talk.data.tags}
-                      slug={talk.id}
-                      slides_url={talk.data.slides_url}
-                      video_url={talk.data.video_url}
-                    />
-                  </div>
-                  <div class="talk-row-repr hidden">
-                    <TalkRow
-                      title={talk.data.title}
-                      event={talk.data.event}
-                      date={talk.data.date}
-                      type={talk.data.type}
-                      tags={talk.data.tags}
-                      slug={talk.id}
-                    />
-                  </div>
+                  <TalkCard
+                    title={talk.data.title}
+                    event={talk.data.event}
+                    date={talk.data.date}
+                    endDate={talk.data.endDate}
+                    type={talk.data.type}
+                    tags={talk.data.tags}
+                    slug={talk.id}
+                    slides_url={talk.data.slides_url}
+                    video_url={talk.data.video_url}
+                  />
                 </div>
               ))}
             </div>
@@ -164,24 +134,13 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
 
 </Layout>
 
-<style>
-  /* Un-layered — beats Tailwind's @layer utilities (grid-cols-*) regardless
-     of source order, so the listing view can collapse the responsive card
-     grid down to a single stacked column without fighting specificity. */
-  #talks-container.is-listing .talk-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-</style>
-
 <script>
   // Astro dedupes identical inline <script> content across ClientRouter
   // swaps and skips re-executing it — so without this init-function +
   // astro:page-load rebind pattern (same one used by ThemeToggle/
   // ThemeSwitcher/CommandPalette), navigating away from /talks and back via
-  // a client-side nav would leave the filter tabs and view toggle bound to
-  // detached, already-replaced elements — silently dead on the second visit.
+  // a client-side nav would leave the filter tabs bound to detached,
+  // already-replaced elements — silently dead on the second visit.
   function initTalksPage() {
     const tabsContainer = document.getElementById('filter-tabs');
     if (!tabsContainer || tabsContainer.dataset.bound) return;
@@ -191,26 +150,6 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
     const items = document.querySelectorAll<HTMLElement>('.talk-item');
     const sections = document.querySelectorAll<HTMLElement>('.year-section');
     const empty = document.getElementById('empty-state');
-    const container = document.getElementById('talks-container');
-    const viewCardsBtn = document.getElementById('view-cards');
-    const viewListingBtn = document.getElementById('view-listing');
-
-    function setView(listing: boolean) {
-      container?.classList.toggle('is-listing', listing);
-      viewCardsBtn?.setAttribute('aria-pressed', String(!listing));
-      viewListingBtn?.setAttribute('aria-pressed', String(listing));
-      viewCardsBtn?.classList.toggle('bg-jungle/15', !listing);
-      viewCardsBtn?.classList.toggle('text-jungle', !listing);
-      viewCardsBtn?.classList.toggle('text-fog/50', listing);
-      viewListingBtn?.classList.toggle('bg-jungle/15', listing);
-      viewListingBtn?.classList.toggle('text-jungle', listing);
-      viewListingBtn?.classList.toggle('text-fog/50', !listing);
-      document.querySelectorAll<HTMLElement>('.talk-card-repr').forEach(el => el.classList.toggle('hidden', listing));
-      document.querySelectorAll<HTMLElement>('.talk-row-repr').forEach(el => el.classList.toggle('hidden', !listing));
-    }
-
-    viewCardsBtn?.addEventListener('click', () => setView(false));
-    viewListingBtn?.addEventListener('click', () => setView(true));
 
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {

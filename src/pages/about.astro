@@ -3,7 +3,6 @@ import Layout from '../layouts/Layout.astro';
 import { SITE, TOPICS } from '../config/site';
 import { META, BIO, CTA, SECTIONS } from '../config/content';
 import SpeakingCtaSection from '../components/SpeakingCtaSection.astro';
-import ProfileTerminal from '../components/ProfileTerminal.astro';
 ---
 
 <Layout
@@ -33,10 +32,9 @@ import ProfileTerminal from '../components/ProfileTerminal.astro';
           <h2 class="font-display text-3xl font-bold text-pine dark:text-fog mb-6">
             {BIO.sectionHeading}
           </h2>
-          <div class="space-y-4 text-pine/75 dark:text-fog/75 leading-relaxed tech:hidden">
+          <div class="space-y-4 text-pine/75 dark:text-fog/75 leading-relaxed">
             {BIO.full.map(para => <p>{para}</p>)}
           </div>
-          <ProfileTerminal />
 
           <!-- Location + languages + fun facts -->
           <div class="flex flex-wrap items-center gap-4 mt-8 text-sm text-pine/70 dark:text-fog/70">

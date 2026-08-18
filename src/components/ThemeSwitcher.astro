@@ -25,7 +25,24 @@
 </div>
 
 <script>
-  import { isTechTheme, setSiteTheme } from '../lib/theme';
+  import { isTechTheme, setSiteTheme, devPath, corpPath } from '../lib/theme';
+
+  // Corp and tech are now two parallel, statically-generated route trees
+  // (see src/lib/theme.ts), not one page CSS-toggled between two looks — so
+  // switching is a real navigation to the other tree's equivalent of the
+  // current page, not an in-place attribute flip. BootSequence already plays
+  // on first tech page-load per session, giving the "seamless switch" feel.
+  function goCorp() {
+    if (!isTechTheme()) return; // already there
+    setSiteTheme('corp');
+    location.assign(corpPath(location.pathname));
+  }
+
+  function goTech() {
+    if (isTechTheme()) return; // already there
+    setSiteTheme('tech');
+    location.assign(devPath(location.pathname));
+  }
 
   function initThemeSwitcher() {
     // Nav.astro renders this component twice (desktop + mobile controls),
@@ -44,8 +61,8 @@
       corpBtn.setAttribute('aria-pressed', String(current === 'corp'));
       techBtn.setAttribute('aria-pressed', String(current === 'tech'));
 
-      corpBtn.addEventListener('click', () => setSiteTheme('corp'));
-      techBtn.addEventListener('click', () => setSiteTheme('tech'));
+      corpBtn.addEventListener('click', goCorp);
+      techBtn.addEventListener('click', goTech);
     });
   }
 

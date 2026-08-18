@@ -1,0 +1,139 @@
+---
+import '../styles/global.css';
+import { SITE } from '../config/site';
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** True for real /dev pages: bounces back to the corp equivalent path if
+   * "corp" is explicitly stored (a deliberate prior choice), and adopts
+   * "tech" as the stored preference on a fresh, unset visit. Left false for
+   * one-off preview pages (e.g. /preview/terminal-session) that aren't part
+   * of the corp/dev mirrored route tree, so there's no equivalent to bounce
+   * to and this must not run for them. */
+  enableCorpRedirect?: boolean;
+}
+
+const { title, description = SITE.description, enableCorpRedirect = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} | Jeroen van Erp</title>
+
+    <ClientRouter />
+
+    <!-- Dark mode: same pre-paint mechanism as the main Layout, so the choice
+         made on the real site carries over here. Site theme is forced here
+         regardless of storage — by the time either an ExperimentLayout preview
+         or a real /dev page renders, tech is what's being shown. -->
+    <script is:inline>
+      (function () {
+        document.documentElement.dataset.siteTheme = 'tech';
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (stored === 'dark' || (!stored && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+
+    {enableCorpRedirect && (
+      <script is:inline>
+        (function () {
+          const stored = localStorage.getItem('site-theme');
+          if (stored === 'corp') {
+            const path = location.pathname.replace(/^\/dev/, '') || '/';
+            if (path !== location.pathname) location.replace(path);
+          } else if (!stored) {
+            localStorage.setItem('site-theme', 'tech');
+          }
+        })();
+      </script>
+    )}
+
+    <!-- Site theme: redirect SPA navigations landing on a real /dev page
+         back to its corp equivalent when "corp" is stored (mirrors the
+         enableCorpRedirect pre-paint check above, but for ClientRouter
+         navigations rather than hard loads — without this, a "corp"
+         preference written by another tab mid-session only took effect on
+         the next hard load, and every /dev-internal link click kept
+         rendering in tech regardless).
+
+         astro:before-preparation is the correct hook for this: it's the one
+         ClientRouter transition event that's actually cancelable, fires
+         before any fetch, and lets us redirect cleanly by mutating event.to
+         in place so the router's own navigation machinery completes the
+         transition to the new destination. (Doing this from astro:before-swap
+         via location.replace() instead — an earlier version of this fix did
+         exactly that — is fundamentally racy: that event isn't cancelable,
+         so Astro's own history.pushState to the ORIGINAL destination runs
+         synchronously right after and non-deterministically stomps on the
+         manual redirect.)
+
+         Checked by destination path prefix, not by reading a flag off this
+         page's own props: only real /dev pages ever render with
+         enableCorpRedirect, so "destination starts with /dev" is an accurate
+         stand-in for "the destination opts into this" without needing to
+         have fetched its HTML yet — and it stays correct when the
+         navigation's source is a non-mirrored page (e.g. /preview/*) that
+         wouldn't itself have this check enabled. -->
+    <script>
+      document.addEventListener('astro:before-preparation', (e) => {
+        const prepEvent = e as TransitionBeforePreparationEvent;
+        const toPathname = prepEvent.to.pathname;
+        if (toPathname === '/dev' || toPathname.startsWith('/dev/')) {
+          const stored = localStorage.getItem('site-theme');
+          if (stored === 'corp') {
+            const path = toPathname.replace(/^\/dev/, '') || '/';
+            prepEvent.to.pathname = path;
+          }
+        }
+      });
+    </script>
+
+    <!-- Dark mode + site theme: persist across ClientRouter navigations
+         between /dev pages. Without this, the pre-paint script above only
+         ever runs on the very first hard load — every subsequent SPA swap
+         hands off to a freshly-parsed newDocument.documentElement with
+         neither attribute set, so the tech token cascade in global.css stops
+         matching and every page after the first silently renders in corp's
+         default colors while the shell chrome (server-rendered markup, so
+         unaffected) still looks like the tech layout — exactly mirrors why
+         the corp Layout.astro needs the equivalent handler. -->
+    <script>
+      document.addEventListener('astro:before-swap', (e) => {
+        const swapEvent = e as TransitionBeforeSwapEvent;
+        const newHtml = swapEvent.newDocument.documentElement;
+
+        // This listener is registered on `document`, which persists across
+        // an entire SPA session — so once the corp-bounce redirect above has
+        // sent us to a real corp page (rendered by Layout.astro, not this
+        // file), it's still attached and would otherwise force
+        // data-site-theme="tech" onto that incoming corp DOM. Only apply it
+        // when the destination is still an ExperimentLayout-rendered page.
+        const toPathname = swapEvent.to.pathname;
+        const isExperimentLayoutPage = toPathname === '/dev' || toPathname.startsWith('/dev/') || toPathname.startsWith('/preview/');
+        if (!isExperimentLayoutPage) return;
+
+        newHtml.dataset.siteTheme = 'tech';
+
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (stored === 'dark' || (!stored && prefersDark)) {
+          newHtml.classList.add('dark');
+        }
+      });
+    </script>
+  </head>
+  <body class="min-h-screen bg-pine text-fog">
+    <slot />
+  </body>
+</html>

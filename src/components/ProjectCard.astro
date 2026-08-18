@@ -1,6 +1,4 @@
 ---
-import TerminalBar from './TerminalBar.astro';
-
 interface Props {
   name: string;
   description: string;
@@ -44,7 +42,6 @@ const langColor = LANG_COLORS[language] ?? '#8b949e';
   rel="noopener noreferrer"
   class="group flex flex-col overflow-hidden bg-white dark:bg-white/8 border border-pine/10 dark:border-white/10 rounded-xl hover:border-jungle/50 dark:hover:border-mint/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
 >
-  <TerminalBar label={`${name}.git`} />
   <div class="flex flex-col flex-1 p-6">
 
   <!-- Header row -->

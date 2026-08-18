@@ -5,14 +5,11 @@
 // re-deriving/re-mutating dataset.siteTheme independently and risking drift
 // (e.g. a caller that forgets to sync ThemeSwitcher's aria-pressed state).
 
-export const TECH_ACTIVATED_EVENT = 'site-theme:activated-tech';
-
 export function isTechTheme(): boolean {
   return document.documentElement.dataset.siteTheme === 'tech';
 }
 
 export function setSiteTheme(theme: 'corp' | 'tech'): void {
-  const wasTech = isTechTheme();
   if (theme === 'tech') {
     document.documentElement.dataset.siteTheme = 'tech';
   } else {
@@ -24,7 +21,24 @@ export function setSiteTheme(theme: 'corp' | 'tech'): void {
     btn.setAttribute('aria-pressed', String(btn.id === `theme-switch-${theme}`));
   });
 
-  if (theme === 'tech' && !wasTech) {
-    document.dispatchEvent(new CustomEvent(TECH_ACTIVATED_EVENT));
-  }
+  // No same-page "activated tech" event/boot-animation trigger here anymore:
+  // corp and tech are separate route trees now, so setSiteTheme('tech') is
+  // always immediately followed by a real navigation (see ThemeSwitcher /
+  // CommandPalette). BootSequence's own unconditional "play once per session
+  // on first tech page-load" already covers the switch correctly — an event
+  // fired here would race that navigation and get lost before ever painting.
+}
+
+// Corp and tech are now two parallel, statically-generated route trees
+// (corp at "/", tech at "/dev", mirrored 1:1) rather than one page CSS-toggled
+// between two looks — these map a path from one tree to its counterpart in
+// the other, used by ThemeSwitcher/CommandPalette (explicit switch = navigate
+// to "the same content, other theme") and by the corp/dev pre-paint redirects.
+export function devPath(path: string): string {
+  return path === '/' ? '/dev' : `/dev${path}`;
+}
+
+export function corpPath(path: string): string {
+  const stripped = path.replace(/^\/dev/, '');
+  return stripped === '' ? '/' : stripped;
 }

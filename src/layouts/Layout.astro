@@ -60,25 +60,75 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
     <ClientRouter />
 
-    <!-- Dark mode + site theme: run before paint to prevent flash on first load -->
+    <!-- Dark mode + site theme: run before paint to prevent flash on first load.
+         Corp and tech are separate route trees (src/lib/theme.ts) now, not a
+         CSS toggle on one page — a stored "tech" preference means this corp
+         page isn't the right one at all, so redirect to its /dev equivalent
+         before doing anything else. -->
     <script is:inline>
       (function () {
-        const stored = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (stored === 'dark' || (!stored && prefersDark)) {
-          document.documentElement.classList.add('dark');
+        function syncCorpThemeState() {
+          const storedSiteTheme = localStorage.getItem('site-theme');
+          // The guard matters specifically for 404.astro: it's the one corp
+          // page reachable at *any* URL, including a dead /dev/... link — so
+          // location.pathname can already start with /dev here. Without the
+          // guard that becomes /dev/dev/..., itself a 404, redirecting again
+          // to /dev/dev/dev/..., forever.
+          if (storedSiteTheme === 'tech' && !location.pathname.startsWith('/dev')) {
+            location.replace(location.pathname === '/' ? '/dev' : `/dev${location.pathname}`);
+            return;
+          }
+
+          // A bfcache-restored corp page (browser Back button after
+          // ThemeSwitcher.goTech() set this live, right before it navigated
+          // away) can resume with data-site-theme="tech" still attached —
+          // clear it so tech: CSS variants can't stay active on corp markup
+          // that has no tech equivalent to show in their place.
+          delete document.documentElement.dataset.siteTheme;
+
+          const stored = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.toggle('dark', stored === 'dark' || (!stored && prefersDark));
         }
 
-        const storedSiteTheme = localStorage.getItem('site-theme');
-        if (storedSiteTheme === 'tech') {
-          document.documentElement.dataset.siteTheme = 'tech';
-        }
+        syncCorpThemeState();
+        // bfcache restores don't re-run this script from scratch, but this
+        // listener itself survives the freeze/thaw and does fire again.
+        window.addEventListener('pageshow', (e) => { if (e.persisted) syncCorpThemeState(); });
       })();
     </script>
 
-    <!-- Dark mode + site theme: persist across ClientRouter navigations.
-         astro:before-swap fires before the DOM is replaced, giving us
-         access to event.newDocument so we can apply both before first paint. -->
+    <!-- Site theme: redirect SPA navigations away from corp to their /dev
+         equivalent when "tech" is stored. astro:before-preparation is the
+         correct hook for this — it's the one ClientRouter transition event
+         that's actually cancelable, fires before any fetch, and lets us
+         redirect cleanly by mutating event.to in place so the router's own
+         navigation machinery completes the transition to the new
+         destination. (An earlier version of this did the redirect from
+         astro:before-swap via location.replace() — that event isn't
+         cancelable, so Astro's own history.pushState to the ORIGINAL
+         destination runs synchronously right after and non-deterministically
+         stomps on the manual redirect; it happened to look like it worked in
+         casual testing but is fundamentally racy.) -->
+    <script>
+      document.addEventListener('astro:before-preparation', (e) => {
+        const prepEvent = e as TransitionBeforePreparationEvent;
+        const storedSiteTheme = localStorage.getItem('site-theme');
+        const toPathname = prepEvent.to.pathname;
+        // The guard matters specifically for 404.astro: it's the one corp
+        // page reachable at *any* URL, including a dead /dev/... link — so
+        // toPathname can already start with /dev here. Without the guard
+        // that becomes /dev/dev/..., itself a 404, redirecting again to
+        // /dev/dev/dev/..., forever.
+        if (storedSiteTheme === 'tech' && !toPathname.startsWith('/dev')) {
+          prepEvent.to.pathname = toPathname === '/' ? '/dev' : `/dev${toPathname}`;
+        }
+      });
+    </script>
+
+    <!-- Dark mode: persist across ClientRouter navigations. astro:before-swap
+         fires before the DOM is replaced, giving us access to
+         event.newDocument so we can apply it before first paint. -->
     <script>
       document.addEventListener('astro:before-swap', (e) => {
         const newHtml = (e as TransitionBeforeSwapEvent).newDocument.documentElement;
@@ -87,11 +137,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (stored === 'dark' || (!stored && prefersDark)) {
           newHtml.classList.add('dark');
-        }
-
-        const storedSiteTheme = localStorage.getItem('site-theme');
-        if (storedSiteTheme === 'tech') {
-          newHtml.dataset.siteTheme = 'tech';
         }
       });
     </script>

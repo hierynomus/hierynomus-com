@@ -5,7 +5,6 @@ import TalkCard from '../components/TalkCard.astro';
 import { SOCIAL, SITE, TOPICS } from '../config/site';
 import { META, BIO, CTA, HERO, SECTIONS } from '../config/content';
 import ProjectCard from '../components/ProjectCard.astro';
-import ProfileTerminal from '../components/ProfileTerminal.astro';
 
 const allTalks = await getCollection('talks');
 const sortedTalks = allTalks.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
@@ -119,7 +118,7 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
             {HERO.eyebrow}
           </p>
           <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.05] mb-6">
-            Jeroen<br/>van Erp<span class="hidden tech:inline text-jungle animate-pulse" aria-hidden="true">_</span>
+            Jeroen<br/>van Erp
           </h1>
           <p class="text-fog/70 text-lg leading-relaxed mb-6 max-w-lg">
             {HERO.tagline}
@@ -258,7 +257,7 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
           <h2 class="font-display text-3xl sm:text-4xl font-bold text-pine dark:text-fog mb-6">
             {SECTIONS.about.heading}
           </h2>
-          <div class="space-y-4 text-pine/75 dark:text-fog/75 leading-relaxed tech:hidden">
+          <div class="space-y-4 text-pine/75 dark:text-fog/75 leading-relaxed">
             {BIO.short.map(para => <p>{para}</p>)}
             <p>
               <a href="/about" class="font-medium text-jungle dark:text-mint hover:underline underline-offset-2">
@@ -266,12 +265,6 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
               </a>
             </p>
           </div>
-          <ProfileTerminal compact />
-          <p class="hidden tech:block mt-4">
-            <a href="/about" class="font-medium text-jungle hover:underline underline-offset-2">
-              More about me →
-            </a>
-          </p>
         </div>
 
         <div>
@@ -433,7 +426,6 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
 
     <div class="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-white/85 text-xs font-semibold tracking-[0.2em] uppercase mb-4">Speaking Enquiries</p>
-      <p class="hidden tech:block font-sans text-mint mb-4">$ ssh speaking@hierynomus.com</p>
       <h2 class="font-display text-3xl sm:text-5xl font-bold text-white mb-6">
         Want a compelling talk<br/>at your event?
       </h2>

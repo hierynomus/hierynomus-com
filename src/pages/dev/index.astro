@@ -1,0 +1,96 @@
+---
+import { getCollection } from 'astro:content';
+import ShellLayout from '../../layouts/ShellLayout.astro';
+import { SITE, SOCIAL, TOPICS } from '../../config/site';
+import { BIO } from '../../config/content';
+
+const allTalks = (await getCollection('talks')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const recentTalks = allTalks.slice(0, 5);
+
+const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 4);
+
+const dateLabel = (d: Date) => d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+---
+
+<ShellLayout
+  title="Home"
+  description={SITE.description}
+  activeFile="readme"
+  breadcrumb={[{ label: 'README.md' }]}
+>
+  <div class="flex items-start gap-5 mb-8">
+    <img
+      src="/jeroen-van-erp.jpg"
+      alt="Jeroen van Erp"
+      class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg border border-jungle/25 object-cover shrink-0"
+      width="80"
+      height="80"
+    />
+    <div>
+      <h1 class="font-display text-3xl font-bold text-fog mb-1"># {SITE.name}</h1>
+      <p class="text-jungle">{SITE.title}</p>
+    </div>
+  </div>
+
+  <div id="about" class="scroll-mt-6 mb-10">
+    <h2 class="text-mint font-display text-lg mb-3">## About</h2>
+    <div class="space-y-3 text-fog/80 leading-relaxed">
+      {BIO.short.map(p => <p>{p}</p>)}
+    </div>
+    <div class="flex flex-wrap gap-2 mt-4">
+      {TOPICS.map(topic => (
+        <span class="text-xs border border-jungle/25 text-fog/70 px-2 py-0.5 rounded">{topic}</span>
+      ))}
+    </div>
+    <p class="mt-4">
+      <a href="/dev/about" class="text-mint hover:underline underline-offset-2">Full bio →</a>
+    </p>
+  </div>
+
+  <div class="mb-10">
+    <div class="flex items-baseline justify-between mb-3">
+      <h2 class="text-mint font-display text-lg">## Recent talks</h2>
+      <a href="/dev/talks" class="text-xs text-fog/40 hover:text-mint transition-colors">ls talks/ -la →</a>
+    </div>
+    <div>
+      {recentTalks.map(talk => (
+        <a href={`/dev/talks/${talk.id}`} class="block py-2 border-t border-jungle/10 group">
+          <div class="flex items-baseline gap-3">
+            <span class="text-fog/40 text-xs w-24 shrink-0">{dateLabel(talk.data.date)}</span>
+            <span class="text-fog/90 group-hover:text-mint transition-colors">{talk.data.title}</span>
+          </div>
+          <p class="pl-27 text-fog/40 text-xs mt-0.5">{talk.data.event}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+
+  {recentPosts.length > 0 && (
+    <div class="mb-10">
+      <div class="flex items-baseline justify-between mb-3">
+        <h2 class="text-mint font-display text-lg">## Writing</h2>
+        <a href="/dev/writing" class="text-xs text-fog/40 hover:text-mint transition-colors">ls writing/ -la →</a>
+      </div>
+      <ul class="space-y-2">
+        {recentPosts.map(post => (
+          <li>
+            <a href={`/dev/blog/${post.id}`} class="text-fog/80 hover:text-mint transition-colors">{post.data.title}</a>
+            <span class="text-fog/30"> — {dateLabel(post.data.date)}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  <div id="contact" class="scroll-mt-6">
+    <h2 class="text-mint font-display text-lg mb-3">## Contact</h2>
+    <p class="text-fog/80 mb-4">{BIO.tagline}</p>
+    <div class="flex flex-wrap gap-3">
+      <a href={`mailto:${SITE.email}`} class="bg-persimmon text-pine font-semibold px-4 py-2 rounded transition-colors hover:bg-persimmon/90">Get in Touch</a>
+      <a href={SOCIAL.github} target="_blank" rel="noopener noreferrer" class="border border-jungle/25 text-fog/80 px-4 py-2 rounded hover:border-jungle/50 transition-colors">GitHub ↗</a>
+      <a href={SOCIAL.linkedin} target="_blank" rel="noopener noreferrer" class="border border-jungle/25 text-fog/80 px-4 py-2 rounded hover:border-jungle/50 transition-colors">LinkedIn ↗</a>
+    </div>
+  </div>
+</ShellLayout>

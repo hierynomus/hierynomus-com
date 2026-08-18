@@ -1,0 +1,54 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import ShellLayout from '../../../layouts/ShellLayout.astro';
+import { readingTime } from '../../../lib/reading-time';
+import ShellCtaCard from '../../../components/ShellCtaCard.astro';
+import ShellShareButtons from '../../../components/ShellShareButtons.astro';
+import { CTA } from '../../../config/content';
+import { SITE } from '../../../config/site';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map(post => ({ params: { slug: post.id } }));
+}
+
+const { slug } = Astro.params;
+const post = await getEntry('blog', slug!);
+if (!post) return Astro.redirect('/dev/blog');
+
+const { Content } = await render(post);
+
+const dateLabel = post.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const pageUrl = new URL(`/dev/blog/${post.id}`, Astro.site ?? SITE.url).toString();
+---
+
+<ShellLayout
+  title={post.data.title}
+  description={post.data.description}
+  activeFile={`post:${post.id}`}
+  breadcrumb={[{ label: 'README.md', href: '/dev' }, { label: 'blog/', href: '/dev/blog' }, { label: `${post.id}.md` }]}
+>
+  <p class="text-fog/50 text-sm mb-1">{dateLabel} · {readingTime(post.body)} min read</p>
+  <h1 class="font-display text-2xl sm:text-3xl font-bold text-fog mb-3"># {post.data.title}</h1>
+  <p class="text-jungle mb-6">{post.data.description}</p>
+
+  {post.data.tags.length > 0 && (
+    <div class="flex flex-wrap gap-2 mb-8">
+      {post.data.tags.map(tag => (
+        <span class="text-xs border border-jungle/25 text-fog/70 px-2 py-0.5 rounded">{tag}</span>
+      ))}
+    </div>
+  )}
+
+  <div class="prose-shell text-fog/80 leading-relaxed [&>p]:mb-4 [&>ul]:space-y-2 [&>ul]:list-disc [&>ul]:pl-5 [&>h2]:text-mint [&>h2]:font-display [&>h2]:mt-8 [&>h2]:mb-3 [&>strong]:text-fog [&_a]:text-mint [&_a]:underline [&_a]:underline-offset-2 [&_code]:bg-white/8 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_pre]:bg-white/5 [&_pre]:border [&_pre]:border-jungle/15 [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_blockquote]:border-l-2 [&_blockquote]:border-jungle [&_blockquote]:pl-4 [&_blockquote]:text-fog/60">
+    <Content />
+  </div>
+
+  <div class="mt-10 pt-8 border-t border-jungle/10">
+    <ShellShareButtons url={pageUrl} title={post.data.title} />
+  </div>
+
+  <div class="mt-8">
+    <ShellCtaCard heading={CTA.blog.heading} subtext={CTA.blog.subtext} />
+  </div>
+</ShellLayout>

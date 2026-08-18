@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import ShellLayout from '../../../layouts/ShellLayout.astro';
+import { readingTime } from '../../../lib/reading-time';
+import { META } from '../../../config/content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const articles = (await getCollection('writing'))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const dateLabel = (d: Date) => d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+---
+
+<ShellLayout
+  title={META.writing.title}
+  description={META.writing.description}
+  activeFile="writing-index"
+  breadcrumb={[{ label: 'README.md', href: '/dev' }, { label: 'writing/' }]}
+>
+  <h1 class="font-display text-2xl font-bold text-fog mb-6"># Writing</h1>
+
+  <div class="mb-10">
+    <h2 class="text-mint font-display text-lg mb-3">## On this site</h2>
+    {posts.length > 0 ? posts.map(post => (
+      <a href={`/dev/blog/${post.id}`} class="block py-2 border-t border-jungle/10 group">
+        <div class="flex items-baseline gap-3">
+          <span class="text-fog/40 text-xs w-24 shrink-0">{dateLabel(post.data.date)}</span>
+          <span class="text-fog/90 group-hover:text-mint transition-colors">{post.data.title}</span>
+          <span class="text-fog/30 text-xs shrink-0">{readingTime(post.body)} min</span>
+        </div>
+      </a>
+    )) : (
+      <p class="text-fog/40 italic">First post coming soon.</p>
+    )}
+  </div>
+
+  <div>
+    <h2 class="text-mint font-display text-lg mb-3">## Published elsewhere</h2>
+    {articles.map(article => (
+      <a href={article.data.url} target="_blank" rel="noopener noreferrer" class="block py-2 border-t border-jungle/10 group">
+        <div class="flex items-baseline gap-3">
+          <span class="text-fog/40 text-xs w-24 shrink-0">{dateLabel(article.data.date)}</span>
+          <span class="text-fog/90 group-hover:text-mint transition-colors">{article.data.title}</span>
+          <span class="text-fog/30 text-xs">↗ {article.data.publication}</span>
+        </div>
+        <p class="pl-27 text-fog/50 text-xs mt-1">{article.data.description}</p>
+      </a>
+    ))}
+  </div>
+</ShellLayout>

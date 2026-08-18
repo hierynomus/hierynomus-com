@@ -17,14 +17,14 @@
 </div>
 
 <script>
-  import { isTechTheme, TECH_ACTIVATED_EVENT } from '../lib/theme';
+  import { isTechTheme } from '../lib/theme';
 
   const OVERLAY_ID = 'boot-sequence';
   const SESSION_KEY = 'boot-sequence-shown';
   const LINE_DELAY_MS = 220;
   const HOLD_MS = 500;
 
-  function play(full: boolean) {
+  function play() {
     const overlay = document.getElementById(OVERLAY_ID);
     if (!overlay) return;
 
@@ -41,12 +41,11 @@
     overlay.classList.add('flex');
     lines.forEach(line => { line.style.opacity = '0'; });
 
-    const lineCount = full ? lines.length : Math.min(2, lines.length);
-    lines.slice(0, lineCount).forEach((line, i) => {
+    lines.forEach((line, i) => {
       setTimeout(() => { line.style.transition = 'opacity 120ms ease-out'; line.style.opacity = '1'; }, i * LINE_DELAY_MS);
     });
 
-    const totalMs = lineCount * LINE_DELAY_MS + HOLD_MS;
+    const totalMs = lines.length * LINE_DELAY_MS + HOLD_MS;
     setTimeout(() => {
       overlay.style.transition = 'opacity 200ms ease-out';
       overlay.style.opacity = '0';
@@ -59,17 +58,15 @@
     }, totalMs);
   }
 
-  function playIfTech(full: boolean) {
-    if (!isTechTheme()) return;
-    if (sessionStorage.getItem(SESSION_KEY)) return;
+  // Plays once per browser session, the first time a tech page is loaded —
+  // whether that's a fresh visit straight to /dev or landing there via the
+  // ThemeSwitcher/CommandPalette's corp -> tech navigation. There's no
+  // separate "just switched" trigger: since corp and tech are now separate
+  // route trees (src/lib/theme.ts), switching is always a real navigation to
+  // a tech page, and that page's own load is this exact check — a same-page
+  // event fired from the corp side would only race that navigation.
+  if (isTechTheme() && !sessionStorage.getItem(SESSION_KEY)) {
     sessionStorage.setItem(SESSION_KEY, '1');
-    play(full);
+    play();
   }
-
-  // Initial load: full sequence, once per browser session.
-  playIfTech(true);
-
-  // Triggered by theme.ts's setSiteTheme() on an explicit corp -> tech click —
-  // short version, still session-gated so repeat toggles don't replay it.
-  document.addEventListener(TECH_ACTIVATED_EVENT, () => playIfTech(false));
 </script>

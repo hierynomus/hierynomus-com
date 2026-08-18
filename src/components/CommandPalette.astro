@@ -37,7 +37,7 @@ import TerminalBar from './TerminalBar.astro';
 <script>
   import { navigate } from 'astro:transitions/client';
   import { SOCIAL } from '../config/site';
-  import { isTechTheme, setSiteTheme } from '../lib/theme';
+  import { isTechTheme, setSiteTheme, corpPath } from '../lib/theme';
 
   type Command = {
     label: string;
@@ -47,20 +47,25 @@ import TerminalBar from './TerminalBar.astro';
     action?: () => void;
   };
 
+  // The palette only ever opens while isTechTheme() is true (see the keydown
+  // listener below), so every nav target here is a /dev page, not its corp
+  // counterpart — corp and tech are separate route trees now (src/lib/theme.ts).
   const commands: Command[] = [
-    { label: 'Home', href: '/' },
-    { label: 'About', href: '/about' },
-    { label: 'Talks', href: '/talks' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Writing', href: '/writing' },
-    { label: 'Topics', href: '/topics' },
-    { label: 'Projects', href: '/#projects' },
-    { label: 'Contact', href: '/#contact' },
+    { label: 'Home', href: '/dev' },
+    { label: 'About', href: '/dev/about' },
+    { label: 'Talks', href: '/dev/talks' },
+    { label: 'Blog', href: '/dev/blog' },
+    { label: 'Writing', href: '/dev/writing' },
+    { label: 'Topics', href: '/dev/topics' },
+    { label: 'Contact', href: '/dev#contact' },
     { label: 'GitHub', hint: '↗', href: SOCIAL.github, external: true },
     { label: 'LinkedIn', hint: '↗', href: SOCIAL.linkedin, external: true },
     {
       label: 'Switch to corp theme',
-      action: () => setSiteTheme('corp'),
+      action: () => {
+        setSiteTheme('corp');
+        location.assign(corpPath(location.pathname));
+      },
     },
   ];
 
@@ -173,12 +178,6 @@ import TerminalBar from './TerminalBar.astro';
       if (e.key === 'ArrowDown') { e.preventDefault(); setActiveIndex(Math.min(activeIndex + 1, filtered.length - 1)); }
       else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveIndex(Math.max(activeIndex - 1, 0)); }
       else if (e.key === 'Enter') { e.preventDefault(); if (filtered[activeIndex]) run(filtered[activeIndex]); }
-    });
-
-    // Desktop nav and mobile controls each render their own trigger button
-    // (see Nav.astro) — both share the id, so bind every instance found.
-    document.querySelectorAll<HTMLButtonElement>('#command-palette-trigger').forEach(trigger => {
-      trigger.addEventListener('click', open);
     });
   }
 

@@ -11,7 +11,7 @@ const links = [
 ---
 
 <!-- Speaking CTA bar -->
-<div class="tech:hidden bg-pine dark:bg-white/8 border-t border-mint/10">
+<div class="bg-pine dark:bg-white/8 border-t border-mint/10">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
     <p class="text-fog/70 text-sm">
       Available to speak at your conference or meetup.
@@ -25,7 +25,7 @@ const links = [
   </div>
 </div>
 
-<footer class="tech:hidden border-t border-pine/10 dark:border-mint/10 bg-fog/50 dark:bg-white/4">
+<footer class="border-t border-pine/10 dark:border-mint/10 bg-fog/50 dark:bg-white/4">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <div class="flex flex-col sm:flex-row justify-between items-center gap-6">
 
@@ -57,49 +57,5 @@ const links = [
         {' '}· Hosted on <a href="https://pages.cloudflare.com" target="_blank" rel="noopener" class="hover:text-jungle dark:hover:text-mint transition-colors">Cloudflare Pages</a>
       </span>
     </div>
-  </div>
-</footer>
-
-<footer class="hidden tech:block border-t border-jungle/15 bg-pine">
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-sm leading-relaxed">
-    <div class="flex justify-between text-fog/40 text-xs mb-6 uppercase tracking-wide">
-      <span>JEROEN(1)</span>
-      <span>User Commands</span>
-      <span>JEROEN(1)</span>
-    </div>
-
-    <p class="text-jungle font-semibold mb-1">NAME</p>
-    <p class="pl-6 text-fog/85 mb-4">jeroen-van-erp — {SITE.title}</p>
-
-    <p class="text-jungle font-semibold mb-1">SYNOPSIS</p>
-    <p class="pl-6 text-fog/85 mb-4">jeroen [--talk] [--keynote] [--workshop] [--podcast]</p>
-
-    <p class="text-jungle font-semibold mb-1">DESCRIPTION</p>
-    <p class="pl-6 text-fog/85 mb-4">{SITE.description}</p>
-
-    <p class="text-jungle font-semibold mb-1">SEE ALSO</p>
-    <p class="pl-6 text-fog/85 mb-4">
-      {links.map((link, i) => (
-        <>
-          {i > 0 && ', '}
-          <a
-            href={link.href}
-            target={link.external ? '_blank' : undefined}
-            rel={link.external ? 'noopener noreferrer' : undefined}
-            class="hover:text-mint hover:underline underline-offset-2"
-          >{link.label.toLowerCase()}(1)</a>
-        </>
-      ))}
-    </p>
-
-    <p class="text-jungle font-semibold mb-1">COPYRIGHT</p>
-    <p class="pl-6 text-fog/70">© {year} Jeroen van Erp. All rights reserved.</p>
-    <p class="pl-6 text-fog/70 mb-6">Built with astro(1) · hosted on cloudflare-pages(1)</p>
-
-    <p class="pt-4 border-t border-jungle/10">
-      <a href={`mailto:${SITE.email}`} class="text-persimmon hover:underline underline-offset-2">
-        $ mail -s "Speaking enquiry" {SITE.email}
-      </a>
-    </p>
   </div>
 </footer>
