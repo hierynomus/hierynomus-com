@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { SITE } from '../config/site';
+import { PATH_OVERRIDES } from '../lib/theme';
 import { ClientRouter } from 'astro:transitions';
 
 interface Props {
@@ -46,11 +47,23 @@ const { title, description = SITE.description, enableCorpRedirect = false } = As
     </script>
 
     {enableCorpRedirect && (
-      <script is:inline>
+      <script is:inline define:vars={{ pathOverrides: PATH_OVERRIDES }}>
         (function () {
+          // Mirrors corpPath() in src/lib/theme.ts — duplicated here (rather
+          // than imported) because this script must run synchronously before
+          // paint, which rules out ES module imports. pathOverrides is the
+          // one piece actually shared, injected via define:vars — see the
+          // matching comment in Layout.astro's pre-paint script.
+          function corpPath(path) {
+            var override = pathOverrides.find(function (pair) { return pair[1] === path; });
+            if (override) return override[0];
+            var stripped = path.replace(/^\/dev/, '');
+            return stripped === '' ? '/' : stripped;
+          }
+
           const stored = localStorage.getItem('site-theme');
           if (stored === 'corp') {
-            const path = location.pathname.replace(/^\/dev/, '') || '/';
+            const path = corpPath(location.pathname);
             if (path !== location.pathname) location.replace(path);
           } else if (!stored) {
             localStorage.setItem('site-theme', 'tech');
@@ -86,14 +99,15 @@ const { title, description = SITE.description, enableCorpRedirect = false } = As
          navigation's source is a non-mirrored page (e.g. /preview/*) that
          wouldn't itself have this check enabled. -->
     <script>
+      import { corpPath } from '../lib/theme';
+
       document.addEventListener('astro:before-preparation', (e) => {
         const prepEvent = e as TransitionBeforePreparationEvent;
         const toPathname = prepEvent.to.pathname;
         if (toPathname === '/dev' || toPathname.startsWith('/dev/')) {
           const stored = localStorage.getItem('site-theme');
           if (stored === 'corp') {
-            const path = toPathname.replace(/^\/dev/, '') || '/';
-            prepEvent.to.pathname = path;
+            prepEvent.to.pathname = corpPath(toPathname);
           }
         }
       });

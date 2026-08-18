@@ -6,6 +6,7 @@ import BootSequence from '../components/BootSequence.astro';
 import NavProgress from '../components/NavProgress.astro';
 import CommandPalette from '../components/CommandPalette.astro';
 import { SITE, SOCIAL } from '../config/site';
+import { PATH_OVERRIDES } from '../lib/theme';
 import { ClientRouter } from 'astro:transitions';
 
 interface Props {
@@ -65,8 +66,20 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
          CSS toggle on one page — a stored "tech" preference means this corp
          page isn't the right one at all, so redirect to its /dev equivalent
          before doing anything else. -->
-    <script is:inline>
+    <script is:inline define:vars={{ pathOverrides: PATH_OVERRIDES }}>
       (function () {
+        // Mirrors devPath() in src/lib/theme.ts — duplicated here (rather
+        // than imported) because this script must run synchronously before
+        // paint, which rules out ES module imports. pathOverrides is the one
+        // piece actually shared, injected via define:vars so the /about →
+        // /dev/profile exception (and any future ones) only needs adding in
+        // theme.ts, not by hand in every script that redirects between trees.
+        function devPath(path) {
+          var override = pathOverrides.find(function (pair) { return pair[0] === path; });
+          if (override) return override[1];
+          return path === '/' ? '/dev' : ('/dev' + path);
+        }
+
         function syncCorpThemeState() {
           const storedSiteTheme = localStorage.getItem('site-theme');
           // The guard matters specifically for 404.astro: it's the one corp
@@ -75,7 +88,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           // guard that becomes /dev/dev/..., itself a 404, redirecting again
           // to /dev/dev/dev/..., forever.
           if (storedSiteTheme === 'tech' && !location.pathname.startsWith('/dev')) {
-            location.replace(location.pathname === '/' ? '/dev' : `/dev${location.pathname}`);
+            location.replace(devPath(location.pathname));
             return;
           }
 
@@ -111,6 +124,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
          stomps on the manual redirect; it happened to look like it worked in
          casual testing but is fundamentally racy.) -->
     <script>
+      import { devPath } from '../lib/theme';
+
       document.addEventListener('astro:before-preparation', (e) => {
         const prepEvent = e as TransitionBeforePreparationEvent;
         const storedSiteTheme = localStorage.getItem('site-theme');
@@ -121,7 +136,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         // that becomes /dev/dev/..., itself a 404, redirecting again to
         // /dev/dev/dev/..., forever.
         if (storedSiteTheme === 'tech' && !toPathname.startsWith('/dev')) {
-          prepEvent.to.pathname = toPathname === '/' ? '/dev' : `/dev${toPathname}`;
+          prepEvent.to.pathname = devPath(toPathname);
         }
       });
     </script>

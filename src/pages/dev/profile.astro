@@ -1,0 +1,94 @@
+---
+import ShellLayout from '../../layouts/ShellLayout.astro';
+import TerminalBar from '../../components/TerminalBar.astro';
+import CopyTrigger from '../../components/CopyTrigger.astro';
+import { SITE, SOCIAL, TOPICS } from '../../config/site';
+import { META, BIO } from '../../config/content';
+---
+
+<ShellLayout
+  title="profile.yml"
+  description={META.about.description}
+  activeFile="profile"
+  breadcrumb={[{ label: 'README.md', href: '/dev' }, { label: 'profile.yml' }]}
+>
+  <div class="max-w-64 mb-8 border border-jungle/20 rounded-lg overflow-hidden">
+    <TerminalBar label="jeroen-van-erp.jpg" />
+    <img src="/jeroen-van-erp.jpg" alt="Jeroen van Erp" class="w-full h-auto block" width="320" height="320" />
+  </div>
+
+  <div class="font-sans text-sm leading-relaxed space-y-1">
+    <div><span class="text-jungle">name:</span> <span class="text-mint">"{SITE.name}"</span></div>
+    <div><span class="text-jungle">role:</span> <span class="text-mint">"{SITE.title}"</span></div>
+    <div><span class="text-jungle">company:</span> <span class="text-mint">"SUSE"</span></div>
+    <div><span class="text-jungle">location:</span> <span class="text-mint">"{SITE.location}"</span></div>
+
+    <div>
+      <span class="text-jungle">languages:</span>
+      {SITE.languages.map(lang => (
+        <div class="pl-4"><span class="text-fog/40">-</span> <span class="text-fog/85">{lang}</span></div>
+      ))}
+    </div>
+
+    <div>
+      <span class="text-jungle">topics:</span>
+      {TOPICS.map(topic => (
+        <div class="pl-4">
+          <span class="text-fog/40">-</span> <span class="text-fog/85">{topic}</span>
+          {topic === 'Rancher' && (
+            <span class="text-fog/30 italic ml-2"># also a rancher at heart 🐑</span>
+          )}
+        </div>
+      ))}
+    </div>
+
+    <div>
+      <span class="text-jungle">bio:</span>
+
+      <div class="pl-4">
+        <span class="text-jungle">full:</span> <span class="text-fog/40">|</span>
+        <div id="bio-full-text" data-copy-text={BIO.full.join('\n\n')} class="pl-4 mt-1 space-y-2">
+          {BIO.full.map(para => <p class="text-fog/70">{para}</p>)}
+        </div>
+        <div class="pl-4 mt-2">
+          <CopyTrigger targetId="bio-full-text" />
+        </div>
+      </div>
+
+      <div class="pl-4 mt-3">
+        <div class="flex items-baseline justify-between gap-4">
+          <span><span class="text-jungle">press:</span> <span class="text-fog/40">|</span></span>
+          <span class="text-xs text-fog/40">≤ 500 characters</span>
+        </div>
+        <p id="bio-press-text" class="pl-4 mt-1 text-fog/70">{BIO.press}</p>
+        <div class="pl-4 mt-2">
+          <CopyTrigger targetId="bio-press-text" />
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <span class="text-jungle">role_context:</span> <span class="text-fog/40">|</span>
+      <p class="pl-4 mt-1 text-fog/70">{BIO.suseRole}</p>
+    </div>
+
+    <div>
+      <span class="text-jungle">links:</span>
+      <div class="pl-4">
+        <span class="text-jungle/70">github:</span>{' '}
+        <a href={SOCIAL.github} target="_blank" rel="noopener noreferrer" class="text-mint hover:underline underline-offset-2">"{SOCIAL.github}" ↗</a>
+      </div>
+      <div class="pl-4">
+        <span class="text-jungle/70">linkedin:</span>{' '}
+        <a href={SOCIAL.linkedin} target="_blank" rel="noopener noreferrer" class="text-mint hover:underline underline-offset-2">"{SOCIAL.linkedin}" ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    import { initCopyToClipboard } from '../../lib/copy-to-clipboard';
+
+    initCopyToClipboard();
+    document.addEventListener('astro:page-load', initCopyToClipboard);
+  </script>
+</ShellLayout>

@@ -15,7 +15,7 @@ interface Props {
   title: string;
   description?: string;
   /** Identifies which sidebar row (if any) is "open" — see the id scheme
-   * used across /dev pages, e.g. 'readme', 'talk:kubecon-eu-2026', 'about'. */
+   * used across /dev pages, e.g. 'readme', 'talk:kubecon-eu-2026', 'profile'. */
   activeFile: string;
   breadcrumb: Crumb[];
 }
@@ -112,8 +112,8 @@ const currentTab = {
         ))}
 
         <div class="mt-3 pt-3 border-t border-jungle/10">
-          <a href="/dev/about" class={itemClasses('about').replace('px-6', 'px-3')}>
-            <span class="text-persimmon/70 shrink-0">▤</span> about.md
+          <a href="/dev/profile" class={itemClasses('profile').replace('px-6', 'px-3')}>
+            <span class="text-persimmon/70 shrink-0">▤</span> profile.yml
           </a>
           <a href="/dev/topics" class={itemClasses('topics-index').replace('px-6', 'px-3')}>
             <span class="text-persimmon/70 shrink-0">▤</span> topics.md
