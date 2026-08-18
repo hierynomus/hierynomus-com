@@ -22,9 +22,8 @@ interface Props {
 
 const { title, description, activeFile, breadcrumb } = Astro.props;
 
-const [talks, posts, projects] = await Promise.all([
+const [talks, projects] = await Promise.all([
   getCollection('talks'),
-  getCollection('blog', ({ data }) => !data.draft),
   getCollection('projects'),
 ]);
 
@@ -32,10 +31,6 @@ const allTalks = talks.sort((a, b) => b.data.date.getTime() - a.data.date.getTim
 const recentTalks = allTalks.slice(0, 6);
 const totalTalks = allTalks.length;
 const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
-
-const recentPosts = posts
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 4);
 
 function itemClasses(id: string): string {
   const active = id === activeFile;
@@ -87,16 +82,6 @@ const currentTab = {
           </a>
         ))}
         <a href="/dev/talks" class={itemClasses('talks-index') + ' text-fog/40'}>… all {totalTalks}</a>
-
-        <a href="/dev/blog" class={itemClasses('blog-index').replace('px-6', 'px-3') + ' text-xs mt-3 mb-1'}>▾ blog/</a>
-        {recentPosts.length > 0 ? recentPosts.map(post => (
-          <a href={`/dev/blog/${post.id}`} class={itemClasses(`post:${post.id}`)}>
-            <span class="text-jungle/60 shrink-0">·</span>
-            <span class="truncate">{post.id}.md</span>
-          </a>
-        )) : (
-          <p class="px-6 py-1 text-fog/30 italic">empty</p>
-        )}
 
         <p class="px-3 text-fog/50 text-xs mt-3 mb-1">▾ projects/</p>
         {projects.map(project => (
