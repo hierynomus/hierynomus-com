@@ -31,7 +31,7 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
 >
 
   <!-- Header -->
-  <section class="bg-gradient-to-br from-pine to-jungle py-16 sm:py-20">
+  <section class="hero-surface py-16 sm:py-20">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <p class="text-mint text-xs font-semibold tracking-[0.2em] uppercase mb-3">Speaking history</p>
       <h1 class="font-display text-4xl sm:text-5xl font-bold text-white mb-4">All Talks</h1>
@@ -46,23 +46,26 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
   <section class="py-14 bg-white dark:bg-pine min-h-screen">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <!-- Filter tabs -->
-      <div class="flex flex-wrap gap-2 mb-10" id="filter-tabs" role="tablist" aria-label="Filter talks by type">
-        {activeTypes.map(type => (
-          <button
-            role="tab"
-            data-type={type}
-            aria-selected={type === 'all' ? 'true' : 'false'}
-            class:list={[
-              'filter-tab px-4 py-1.5 rounded-full text-sm font-medium border transition-colors',
-              type === 'all'
-                ? 'bg-jungle text-white border-jungle'
-                : 'bg-white dark:bg-white/8 text-pine/65 dark:text-fog/65 border-pine/15 dark:border-mint/15 hover:border-jungle/40 dark:hover:border-mint/40',
-            ]}
-          >
-            {type === 'all' ? 'All' : TYPE_CONFIG[type]?.label ?? type}
-          </button>
-        ))}
+      <!-- Filter tabs + view toggle -->
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-10">
+        <div class="flex flex-wrap gap-2" id="filter-tabs" role="tablist" aria-label="Filter talks by type">
+          {activeTypes.map(type => (
+            <button
+              role="tab"
+              data-type={type}
+              aria-selected={type === 'all' ? 'true' : 'false'}
+              class:list={[
+                'filter-tab px-4 py-1.5 rounded-full text-sm font-medium border transition-colors',
+                type === 'all'
+                  ? 'bg-jungle text-white border-jungle'
+                  : 'bg-fog dark:bg-white/8 text-pine/65 dark:text-fog/65 border-pine/15 dark:border-mint/15 hover:border-jungle/40 dark:hover:border-mint/40',
+              ]}
+            >
+              {type === 'all' ? 'All' : TYPE_CONFIG[type]?.label ?? type}
+            </button>
+          ))}
+        </div>
+
       </div>
 
       <div id="talks-container">
@@ -73,7 +76,7 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
             <h2 class="font-display text-2xl font-bold text-persimmon mb-6">
               Upcoming
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="talk-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {upcomingTalks.map(talk => (
                 <div data-talk-type={talk.data.type} class="talk-item">
                   <TalkCard
@@ -99,7 +102,7 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
             <h2 class="year-heading font-display text-2xl font-bold text-pine/30 dark:text-fog/25 mb-6 tabular-nums">
               {year}
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="talk-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {talks.map(talk => (
                 <div data-talk-type={talk.data.type} class="talk-item">
                   <TalkCard
@@ -132,45 +135,60 @@ const activeTypes = ['all', ...new Set(sorted.map(t => t.data.type))] as string[
 </Layout>
 
 <script>
-  const tabs = document.querySelectorAll<HTMLButtonElement>('.filter-tab');
-  const items = document.querySelectorAll<HTMLElement>('.talk-item');
-  const sections = document.querySelectorAll<HTMLElement>('.year-section');
-  const empty = document.getElementById('empty-state');
+  // Astro dedupes identical inline <script> content across ClientRouter
+  // swaps and skips re-executing it — so without this init-function +
+  // astro:page-load rebind pattern (same one used by ThemeToggle/
+  // ThemeSwitcher/CommandPalette), navigating away from /talks and back via
+  // a client-side nav would leave the filter tabs bound to detached,
+  // already-replaced elements — silently dead on the second visit.
+  function initTalksPage() {
+    const tabsContainer = document.getElementById('filter-tabs');
+    if (!tabsContainer || tabsContainer.dataset.bound) return;
+    tabsContainer.dataset.bound = '1';
 
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const type = tab.dataset.type!;
+    const tabs = document.querySelectorAll<HTMLButtonElement>('.filter-tab');
+    const items = document.querySelectorAll<HTMLElement>('.talk-item');
+    const sections = document.querySelectorAll<HTMLElement>('.year-section');
+    const empty = document.getElementById('empty-state');
 
-      // Update tab styles
-      tabs.forEach(t => {
-        const active = t.dataset.type === type;
-        t.setAttribute('aria-selected', String(active));
-        t.classList.toggle('bg-jungle', active);
-        t.classList.toggle('text-white', active);
-        t.classList.toggle('border-jungle', active);
-        t.classList.toggle('bg-white', !active);
-        t.classList.toggle('dark:bg-white/8', !active);
-        t.classList.toggle('text-pine/65', !active);
-        t.classList.toggle('dark:text-fog/65', !active);
-        t.classList.toggle('border-pine/15', !active);
-        t.classList.toggle('dark:border-mint/15', !active);
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const type = tab.dataset.type!;
+
+        // Update tab styles
+        tabs.forEach(t => {
+          const active = t.dataset.type === type;
+          t.setAttribute('aria-selected', String(active));
+          t.classList.toggle('bg-jungle', active);
+          t.classList.toggle('text-white', active);
+          t.classList.toggle('border-jungle', active);
+          t.classList.toggle('bg-fog', !active);
+          t.classList.toggle('dark:bg-white/8', !active);
+          t.classList.toggle('text-pine/65', !active);
+          t.classList.toggle('dark:text-fog/65', !active);
+          t.classList.toggle('border-pine/15', !active);
+          t.classList.toggle('dark:border-mint/15', !active);
+        });
+
+        // Show/hide talk cards
+        let totalVisible = 0;
+        items.forEach(item => {
+          const match = type === 'all' || item.dataset.talkType === type;
+          item.classList.toggle('hidden', !match);
+          if (match) totalVisible++;
+        });
+
+        // Hide year headings that have no visible talks
+        sections.forEach(section => {
+          const visibleInSection = section.querySelectorAll('.talk-item:not(.hidden)').length;
+          section.classList.toggle('hidden', visibleInSection === 0);
+        });
+
+        empty?.classList.toggle('hidden', totalVisible > 0);
       });
-
-      // Show/hide talk cards
-      let totalVisible = 0;
-      items.forEach(item => {
-        const match = type === 'all' || item.dataset.talkType === type;
-        item.classList.toggle('hidden', !match);
-        if (match) totalVisible++;
-      });
-
-      // Hide year headings that have no visible talks
-      sections.forEach(section => {
-        const visibleInSection = section.querySelectorAll('.talk-item:not(.hidden)').length;
-        section.classList.toggle('hidden', visibleInSection === 0);
-      });
-
-      empty?.classList.toggle('hidden', totalVisible > 0);
     });
-  });
+  }
+
+  initTalksPage();
+  document.addEventListener('astro:page-load', initTalksPage);
 </script>

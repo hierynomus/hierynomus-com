@@ -1,5 +1,6 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+import ThemeSwitcher from './ThemeSwitcher.astro';
 import { SOCIAL } from '../config/site';
 
 const navLinks = [
@@ -17,12 +18,12 @@ const currentPath = Astro.url.pathname;
   class="sticky top-0 z-50 backdrop-blur-md bg-white/85 dark:bg-pine/85 border-b border-pine/10 dark:border-mint/10"
 >
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
+    <div class="flex items-center justify-between gap-6 h-16">
 
       <!-- Logo -->
       <a
         href="/"
-        class="font-display font-bold text-lg text-pine dark:text-fog hover:text-jungle dark:hover:text-mint transition-colors"
+        class="shrink-0 whitespace-nowrap font-display font-bold text-lg text-pine dark:text-fog hover:text-jungle dark:hover:text-mint transition-colors"
       >
         Jeroen van Erp
       </a>
@@ -33,7 +34,7 @@ const currentPath = Astro.url.pathname;
           <a
             href={link.href}
             class:list={[
-              'text-sm font-medium transition-colors',
+              'nav-link text-sm font-medium transition-colors',
               currentPath.startsWith(link.href) && link.href !== '/'
                 ? 'text-jungle dark:text-mint'
                 : 'text-pine/65 dark:text-fog/65 hover:text-pine dark:hover:text-fog',
@@ -69,10 +70,11 @@ const currentPath = Astro.url.pathname;
           </a>
         </div>
 
+        <ThemeSwitcher />
         <ThemeToggle />
         <a
           href="/#contact"
-          class="bg-persimmon hover:bg-persimmon/90 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+          class="shrink-0 whitespace-nowrap bg-persimmon hover:bg-persimmon/90 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
         >
           Get in Touch
         </a>
@@ -80,6 +82,7 @@ const currentPath = Astro.url.pathname;
 
       <!-- Mobile controls -->
       <div class="flex md:hidden items-center gap-2">
+        <ThemeSwitcher />
         <ThemeToggle />
         <button
           id="mobile-menu-btn"
@@ -103,7 +106,7 @@ const currentPath = Astro.url.pathname;
       {navLinks.map(link => (
         <a
           href={link.href}
-          class="block px-2 py-2 text-sm font-medium text-pine/70 dark:text-fog/70 hover:text-jungle dark:hover:text-mint rounded-lg hover:bg-pine/5 dark:hover:bg-mint/10 transition-colors"
+          class="nav-link block px-2 py-2 text-sm font-medium text-pine/70 dark:text-fog/70 hover:text-jungle dark:hover:text-mint rounded-lg hover:bg-pine/5 dark:hover:bg-mint/10 transition-colors"
         >
           {link.label}
         </a>
@@ -151,10 +154,11 @@ const currentPath = Astro.url.pathname;
   const close = document.getElementById('close-icon');
 
   btn?.addEventListener('click', () => {
-    const isOpen = !menu?.classList.contains('hidden');
-    menu?.classList.toggle('hidden');
-    hamburger?.classList.toggle('hidden', !isOpen ? false : false);
-    close?.classList.toggle('hidden');
-    btn.setAttribute('aria-expanded', String(!isOpen));
+    const wasOpen = !menu?.classList.contains('hidden');
+    const willOpen = !wasOpen;
+    menu?.classList.toggle('hidden', !willOpen);
+    hamburger?.classList.toggle('hidden', willOpen);
+    close?.classList.toggle('hidden', !willOpen);
+    btn.setAttribute('aria-expanded', String(willOpen));
   });
 </script>

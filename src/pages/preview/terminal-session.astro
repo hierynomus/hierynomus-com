@@ -1,0 +1,107 @@
+---
+import { getCollection } from 'astro:content';
+import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
+import TerminalCommandBlock from '../../components/TerminalCommandBlock.astro';
+import { SITE, SOCIAL, TOPICS } from '../../config/site';
+import { BIO } from '../../config/content';
+
+const allTalks = (await getCollection('talks')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const recentTalks = allTalks.slice(0, 8);
+const totalTalks = allTalks.length;
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 4);
+
+const projects = await getCollection('projects');
+
+const dateLabel = (d: Date) => d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+---
+
+<ExperimentLayout title="Terminal Session" description="Layout concept: the site as one continuous shell session.">
+  <div class="max-w-3xl mx-auto px-4 sm:px-8 py-16 font-sans text-sm">
+
+    <div class="flex justify-between text-xs text-fog/40 mb-12">
+      <a href="/" class="hover:text-mint transition-colors">exit preview</a>
+      <a href="/dev" class="hover:text-mint transition-colors">other concept →</a>
+    </div>
+
+    <TerminalCommandBlock prompt="whoami">
+      <p class="text-fog">{SITE.name} — {SITE.title}</p>
+    </TerminalCommandBlock>
+
+    <TerminalCommandBlock prompt="cat about.md">
+      <div class="space-y-3">
+        {BIO.short.map(p => <p>{p}</p>)}
+      </div>
+      <p class="mt-4 flex flex-wrap gap-2">
+        {TOPICS.map(topic => (
+          <span class="text-xs border border-jungle/25 text-fog/70 px-2 py-0.5 rounded">{topic}</span>
+        ))}
+      </p>
+    </TerminalCommandBlock>
+
+    <TerminalCommandBlock prompt={`ls talks/ --sort=date | head -${recentTalks.length}`}>
+      <div class="space-y-1">
+        {recentTalks.map(talk => (
+          <a
+            href={`/talks/${talk.id}`}
+            class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3 py-1 hover:text-mint transition-colors group"
+          >
+            <span class="text-fog/40 whitespace-nowrap shrink-0 w-28">{dateLabel(talk.data.date)}</span>
+            <span class="text-fog/90 group-hover:text-mint transition-colors">{talk.data.title}</span>
+            <span class="text-fog/30 text-xs">— {talk.data.event}</span>
+          </a>
+        ))}
+      </div>
+      <p class="mt-3">
+        <a href="/talks" class="text-jungle hover:text-mint transition-colors">$ open talks/ — {totalTalks} total →</a>
+      </p>
+    </TerminalCommandBlock>
+
+    <TerminalCommandBlock prompt="cat blog/latest.log">
+      {posts.length > 0 ? (
+        <ul class="space-y-2">
+          {posts.map(post => (
+            <li>
+              <a href={`/blog/${post.id}`} class="hover:text-mint transition-colors">{post.data.title}</a>
+              <span class="text-fog/30"> — {dateLabel(post.data.date)}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="text-fog/40 italic">log is empty — check back soon.</p>
+      )}
+    </TerminalCommandBlock>
+
+    <TerminalCommandBlock prompt="ls -la projects/">
+      <div class="space-y-1">
+        {projects.map(project => (
+          <a
+            href={project.data.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3 py-1 hover:text-mint transition-colors group"
+          >
+            <span class="text-fog/40 whitespace-nowrap shrink-0">{project.data.name}.git</span>
+            <span class="text-fog/60 text-xs">★ {project.data.stars} · {project.data.language} · {project.data.license}</span>
+          </a>
+        ))}
+      </div>
+    </TerminalCommandBlock>
+
+    <TerminalCommandBlock prompt="cat contact.md">
+      <p class="mb-4">{BIO.tagline}</p>
+      <div class="flex flex-wrap gap-3">
+        <a href={`mailto:${SITE.email}`} class="bg-persimmon text-pine font-semibold px-4 py-2 rounded transition-colors hover:bg-persimmon/90">Get in Touch</a>
+        <a href={SOCIAL.github} target="_blank" rel="noopener noreferrer" class="border border-jungle/25 text-fog/80 px-4 py-2 rounded hover:border-jungle/50 transition-colors">GitHub ↗</a>
+        <a href={SOCIAL.linkedin} target="_blank" rel="noopener noreferrer" class="border border-jungle/25 text-fog/80 px-4 py-2 rounded hover:border-jungle/50 transition-colors">LinkedIn ↗</a>
+      </div>
+    </TerminalCommandBlock>
+
+    <p class="text-mint">
+      <span class="text-jungle">jeroen@hierynomus</span><span class="text-fog/40">:~$</span>
+      <span class="animate-pulse ml-1">_</span>
+    </p>
+  </div>
+</ExperimentLayout>

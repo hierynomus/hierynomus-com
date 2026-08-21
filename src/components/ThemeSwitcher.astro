@@ -1,0 +1,72 @@
+---
+---
+
+<div
+  class="inline-flex items-center gap-0.5 rounded-lg border border-pine/10 dark:border-mint/10 p-0.5"
+  role="group"
+  aria-label="Site theme"
+>
+  <button
+    id="theme-switch-corp"
+    type="button"
+    aria-pressed="true"
+    class="rounded-md px-2.5 py-1 text-xs font-semibold transition-colors bg-pine/5 dark:bg-mint/10 text-pine dark:text-fog tech:bg-transparent tech:text-fog/50 tech:hover:text-fog/80"
+  >
+    corp
+  </button>
+  <button
+    id="theme-switch-tech"
+    type="button"
+    aria-pressed="false"
+    class="rounded-md px-2.5 py-1 text-xs font-semibold transition-colors text-pine/50 dark:text-fog/50 hover:text-pine dark:hover:text-fog tech:bg-jungle/15 tech:text-jungle"
+  >
+    ~$
+  </button>
+</div>
+
+<script>
+  import { isTechTheme, setSiteTheme, devPath, corpPath } from '../lib/theme';
+
+  // Corp and tech are now two parallel, statically-generated route trees
+  // (see src/lib/theme.ts), not one page CSS-toggled between two looks — so
+  // switching is a real navigation to the other tree's equivalent of the
+  // current page, not an in-place attribute flip. BootSequence already plays
+  // on first tech page-load per session, giving the "seamless switch" feel.
+  function goCorp() {
+    if (!isTechTheme()) return; // already there
+    setSiteTheme('corp');
+    location.assign(corpPath(location.pathname));
+  }
+
+  function goTech() {
+    if (isTechTheme()) return; // already there
+    setSiteTheme('tech');
+    location.assign(devPath(location.pathname));
+  }
+
+  function initThemeSwitcher() {
+    // Nav.astro renders this component twice (desktop + mobile controls),
+    // producing duplicate ids — bind every pair, not just the first, or the
+    // one visible on the current viewport may go dead.
+    const corpBtns = document.querySelectorAll<HTMLButtonElement>('#theme-switch-corp');
+    const techBtns = document.querySelectorAll<HTMLButtonElement>('#theme-switch-tech');
+    const current = isTechTheme() ? 'tech' : 'corp';
+
+    corpBtns.forEach((corpBtn, i) => {
+      const techBtn = techBtns[i];
+      if (!techBtn || corpBtn.dataset.bound) return;
+      corpBtn.dataset.bound = '1';
+      techBtn.dataset.bound = '1';
+
+      corpBtn.setAttribute('aria-pressed', String(current === 'corp'));
+      techBtn.setAttribute('aria-pressed', String(current === 'tech'));
+
+      corpBtn.addEventListener('click', goCorp);
+      techBtn.addEventListener('click', goTech);
+    });
+  }
+
+  // Initial bind + rebind after every ClientRouter navigation
+  initThemeSwitcher();
+  document.addEventListener('astro:page-load', initThemeSwitcher);
+</script>

@@ -95,18 +95,18 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
   </Fragment>
 
   <!-- ─── HERO ──────────────────────────────────────────────────────────── -->
-  <section class="relative overflow-hidden bg-gradient-to-br from-pine to-jungle">
+  <section class="hero-surface">
 
     <!-- Stage light glow -->
     <div
       class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-72 rounded-full blur-3xl"
-      style="background: radial-gradient(ellipse, rgba(48,186,120,0.22) 0%, transparent 70%);"
+      style={`background: radial-gradient(ellipse, color-mix(in srgb, var(--color-jungle) 22%, transparent) 0%, transparent 70%);`}
     ></div>
 
     <!-- Subtle dot grid -->
     <div
       class="absolute inset-0 opacity-[0.04]"
-      style="background-image: radial-gradient(circle, #90ebcd 1px, transparent 1px); background-size: 32px 32px;"
+      style={`background-image: radial-gradient(circle, var(--color-mint) 1px, transparent 1px); background-size: 32px 32px;`}
     ></div>
 
     <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
@@ -285,7 +285,6 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
             </div>
             <div>
               <p class="font-semibold text-pine dark:text-fog text-sm">SUSE</p>
-              <p class="text-pine/65 dark:text-fog/65 text-xs">The world's largest independent open source company</p>
             </div>
           </div>
         </div>
@@ -416,12 +415,12 @@ const uniqueEvents = new Set(allTalks.map(t => t.data.event)).size;
   )}
 
   <!-- ─── BOOK ME / CONTACT ─────────────────────────────────────────────── -->
-  <section id="contact" class="relative overflow-hidden bg-gradient-to-br from-pine to-jungle py-24">
+  <section id="contact" class="hero-surface py-24">
 
     <!-- Stage light glow -->
     <div
       class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-48 rounded-full blur-3xl pointer-events-none"
-      style="background: radial-gradient(ellipse, rgba(48,186,120,0.18) 0%, transparent 70%);"
+      style={`background: radial-gradient(ellipse, color-mix(in srgb, var(--color-jungle) 18%, transparent) 0%, transparent 70%);`}
     ></div>
 
     <div class="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

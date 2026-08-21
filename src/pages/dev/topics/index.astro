@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+import ShellLayout from '../../../layouts/ShellLayout.astro';
+import { META } from '../../../config/content';
+
+const talks = await getCollection('talks');
+const writing = await getCollection('writing');
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+const tagCounts = new Map<string, number>();
+for (const talk of talks) for (const tag of talk.data.tags) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+for (const article of writing) for (const tag of article.data.tags) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+for (const post of posts) for (const tag of post.data.tags) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+
+const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
+---
+
+<ShellLayout
+  title={META.topics.title}
+  description={META.topics.description}
+  activeFile="topics-index"
+  breadcrumb={[{ label: 'README.md', href: '/dev' }, { label: 'topics/' }]}
+>
+  <h1 class="font-display text-2xl font-bold text-fog mb-6"># Topics</h1>
+  <p class="text-fog/60 mb-6">grep -rl across talks/, blog/, writing/ — sorted by frequency</p>
+
+  {sortedTags.length > 0 ? (
+    <div class="flex flex-wrap gap-2">
+      {sortedTags.map(([tag, count]) => (
+        <a
+          href={`/dev/topics/${encodeURIComponent(tag)}`}
+          class="inline-flex items-center gap-2 border border-jungle/25 hover:border-jungle/50 text-fog/80 hover:text-mint px-3 py-1.5 rounded transition-colors"
+        >
+          <span class="text-sm">{tag}</span>
+          <span class="text-xs text-fog/40">{count}</span>
+        </a>
+      ))}
+    </div>
+  ) : (
+    <p class="text-fog/40 italic">No tags found yet.</p>
+  )}
+</ShellLayout>

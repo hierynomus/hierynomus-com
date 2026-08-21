@@ -1,0 +1,16 @@
+---
+interface Props {
+  prompt: string;
+}
+
+const { prompt } = Astro.props;
+---
+
+<div class="mb-10">
+  <p class="text-mint mb-3">
+    <span class="text-jungle">jeroen@hierynomus</span><span class="text-fog/40">:~$</span> {prompt}
+  </p>
+  <div class="pl-4 text-fog/80 leading-relaxed">
+    <slot />
+  </div>
+</div>

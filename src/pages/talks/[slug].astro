@@ -68,7 +68,7 @@ const jsonLd = {
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
 
   <!-- Header -->
-  <section class="relative overflow-hidden bg-gradient-to-br from-pine to-jungle pt-16 pb-12 sm:pt-20">
+  <section class="hero-surface pt-16 pb-12 sm:pt-20">
 
     {/* Background image (when present) — diagonal split matching the OG image style */}
     {talk.data.image && (
@@ -81,12 +81,12 @@ const jsonLd = {
         {/* Pine trapezoid: top-left (0,0) → (63%,0) → (50%,100%) → (0,100%) */}
         <div
           class="absolute inset-0"
-          style="background-color: #0c322c; clip-path: polygon(0 0, 63% 0, 50% 100%, 0 100%);"
+          style={`background-color: var(--color-pine); clip-path: polygon(0 0, 63% 0, 50% 100%, 0 100%);`}
         ></div>
         {/* Soft feather along the diagonal edge */}
         <div
           class="absolute inset-0"
-          style="background: linear-gradient(100deg, transparent 44%, rgba(12,50,44,0.55) 52%, transparent 62%);"
+          style={`background: linear-gradient(100deg, transparent 44%, color-mix(in srgb, var(--color-pine) 55%, transparent) 52%, transparent 62%);`}
         ></div>
       </div>
     )}

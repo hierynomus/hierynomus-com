@@ -1,6 +1,6 @@
 /**
- * Generate favicon PNGs from the SVG design using Space Grotesk (via satori) + resvg.
- * Same pipeline as src/lib/og.ts — satori turns Space Grotesk glyphs into SVG paths,
+ * Generate favicon PNGs from the SVG design using SUSE (via satori) + resvg.
+ * Same pipeline as src/lib/og.ts — satori turns SUSE glyphs into SVG paths,
  * resvg rasterizes the composite.
  *
  * Run whenever the favicon design changes:
@@ -21,14 +21,14 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const fontData = fs.readFileSync(
-  path.join(root, 'node_modules/@fontsource/space-grotesk/files/space-grotesk-latin-700-normal.woff')
+  path.join(root, 'node_modules/@fontsource/suse/files/suse-latin-700-normal.woff')
 );
 
 /**
  * Render the favicon at `size` × `size` pixels.
  *
  * Strategy (mirrors og.ts):
- *  Pass 1 — satori renders the "J" text as SVG path data using Inter 800.
+ *  Pass 1 — satori renders the "J" text as SVG path data using SUSE 700.
  *  Pass 2 — hand-built SVG places the pine background, mint mic capsule,
  *            stand/base, and embeds the satori J paths as a nested <svg>.
  *  resvg rasterises the composite.
@@ -53,7 +53,7 @@ async function renderFavicon(size) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontFamily: 'Space Grotesk',
+          fontFamily: 'SUSE',
           fontWeight: 700,
           fontSize: `${fontSize}px`,
           color: '#0c322c',
@@ -64,7 +64,7 @@ async function renderFavicon(size) {
     {
       width: capsuleW,
       height: capsuleH,
-      fonts: [{ name: 'Space Grotesk', data: fontData, weight: 700, style: 'normal' }],
+      fonts: [{ name: 'SUSE', data: fontData, weight: 700, style: 'normal' }],
     }
   );
 
@@ -100,7 +100,7 @@ async function renderFavicon(size) {
     <!-- Mint mic capsule -->
     <rect x="${mx}" y="${my}" width="${mw}" height="${mh}" rx="${mr}" fill="#90ebcd"/>
 
-    <!-- J from satori (Space Grotesk 700 glyph paths) -->
+    <!-- J from satori (SUSE 700 glyph paths) -->
     <svg x="${mx}" y="${my}" width="${mw}" height="${mh}" viewBox="0 0 ${mw} ${mh}">
       ${jInner}
     </svg>

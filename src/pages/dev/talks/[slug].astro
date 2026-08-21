@@ -1,0 +1,157 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import ShellLayout from '../../../layouts/ShellLayout.astro';
+import TerminalBar from '../../../components/TerminalBar.astro';
+import { TYPE_CONFIG } from '../../../config/talks';
+import ShellCtaCard from '../../../components/ShellCtaCard.astro';
+import ShellShareButtons from '../../../components/ShellShareButtons.astro';
+import { CTA } from '../../../config/content';
+import { SITE } from '../../../config/site';
+
+export async function getStaticPaths() {
+  const talks = await getCollection('talks');
+  return talks.map(talk => ({ params: { slug: talk.id } }));
+}
+
+const { slug } = Astro.params;
+const talk = await getEntry('talks', slug!);
+if (!talk) return Astro.redirect('/dev/talks');
+
+const { Content } = await render(talk);
+
+const allTalks = await getCollection('talks');
+const related = allTalks
+  .filter(t => t.id !== slug && t.data.tags.some(tag => talk.data.tags.includes(tag)))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+const cfg = TYPE_CONFIG[talk.data.type];
+const isUpcoming = talk.data.date > new Date();
+const dateLabel = talk.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const endDateLabel = talk.data.endDate?.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const recordingLabel =
+  talk.data.type === 'podcast' ? '🎙 Listen to Episode' :
+  talk.data.type === 'webinar' ? '▶ Watch Webinar' :
+  '▶ Watch Recording';
+const recordingSectionLabel =
+  talk.data.type === 'podcast' ? 'Episode' :
+  talk.data.type === 'webinar' ? 'Webinar Recording' :
+  'Recording';
+
+const pageUrl = new URL(`/dev/talks/${talk.id}`, Astro.site ?? SITE.url).toString();
+---
+
+<ShellLayout
+  title={talk.data.title}
+  description={`${talk.data.title} — ${talk.data.event}`}
+  activeFile={`talk:${talk.id}`}
+  breadcrumb={[{ label: 'README.md', href: '/dev' }, { label: 'talks/', href: '/dev/talks' }, { label: `${talk.id}.talk` }]}
+>
+  <div class="flex items-center gap-2 mb-3">
+    <span class:list={['inline-flex text-xs font-semibold px-2.5 py-1 rounded-full', cfg.classes]}>{cfg.label}</span>
+    {isUpcoming && (
+      <span class="inline-flex text-xs font-semibold px-2.5 py-1 rounded-full bg-persimmon/20 text-persimmon border border-persimmon/30">Upcoming</span>
+    )}
+  </div>
+
+  <h1 class="font-display text-2xl sm:text-3xl font-bold text-fog mb-1"># {talk.data.title}</h1>
+  <p class="text-jungle mb-1">{talk.data.event}</p>
+  <p class="text-fog/50 text-sm mb-6">{dateLabel}{endDateLabel ? ` – ${endDateLabel}` : ''}</p>
+
+  {talk.data.tags.length > 0 && (
+    <div class="flex flex-wrap gap-2 mb-8">
+      {talk.data.tags.map(tag => (
+        <a href={`/dev/topics/${encodeURIComponent(tag)}`} class="text-xs border border-jungle/25 text-fog/70 hover:text-mint hover:border-jungle/50 px-2 py-0.5 rounded transition-colors">{tag}</a>
+      ))}
+    </div>
+  )}
+
+  {talk.data.image && (
+    <div class="mb-8 border border-jungle/20 rounded-lg overflow-hidden">
+      <TerminalBar label={talk.data.image.split('/').pop() ?? 'image'} />
+      <img src={talk.data.image} alt="" class="w-full h-auto block" loading="lazy" />
+    </div>
+  )}
+
+  <div class="prose-shell text-fog/80 leading-relaxed [&>p]:mb-4 [&>ul]:space-y-2 [&>ul]:list-disc [&>ul]:pl-5 [&>h2]:text-mint [&>h2]:font-display [&>h2]:mt-8 [&>h2]:mb-3 [&>strong]:text-fog [&_a]:text-mint [&_a]:underline [&_a]:underline-offset-2">
+    <Content />
+  </div>
+
+  <div class="mt-8 space-y-4">
+    {talk.data.video_url ? (
+      <div>
+        <h3 class="text-fog font-display font-semibold mb-2">{recordingSectionLabel}</h3>
+        <a href={talk.data.video_url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border border-jungle/25 hover:border-jungle/50 text-mint px-4 py-2 rounded transition-colors">
+          {recordingLabel}
+        </a>
+      </div>
+    ) : !isUpcoming ? (
+      <p class="text-fog/40 text-sm italic">Recording not yet available</p>
+    ) : null}
+
+    {talk.data.type !== 'podcast' && (
+      talk.data.slides_url ? (
+        <div>
+          <h3 class="text-fog font-display font-semibold mb-2">Slides</h3>
+          <a href={talk.data.slides_url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border border-jungle/25 hover:border-jungle/50 text-mint px-4 py-2 rounded transition-colors">
+            View Slides ↗
+          </a>
+        </div>
+      ) : !isUpcoming ? (
+        <p class="text-fog/40 text-sm italic">Slides not yet available</p>
+      ) : null
+    )}
+
+    {isUpcoming && !talk.data.video_url && !talk.data.slides_url && (
+      <p class="text-fog/60 text-sm">Slides and recording will be shared here after the event.</p>
+    )}
+  </div>
+
+  <div class="mt-10 pt-8 border-t border-jungle/10">
+    <h2 class="text-mint font-display text-lg mb-3">## Event details</h2>
+    <dl class="text-sm space-y-2">
+      <div class="flex gap-3"><dt class="text-fog/40 w-28 shrink-0">Event</dt><dd class="text-fog/80">{talk.data.event}</dd></div>
+      <div class="flex gap-3"><dt class="text-fog/40 w-28 shrink-0">Format</dt><dd class="text-fog/80">{cfg.label}</dd></div>
+      {talk.data.co_presenters.length > 0 && (
+        <div class="flex gap-3">
+          <dt class="text-fog/40 w-28 shrink-0">{talk.data.co_presenters.length === 1 ? 'Co-presenter' : 'Co-presenters'}</dt>
+          <dd class="text-fog/80">
+            {talk.data.co_presenters.map((person, i) => (
+              <>
+                {i > 0 && ', '}
+                {person.url ? <a href={person.url} target="_blank" rel="noopener noreferrer" class="text-mint hover:underline underline-offset-2">{person.name}</a> : person.name}
+              </>
+            ))}
+          </dd>
+        </div>
+      )}
+      {talk.data.conference_url && (
+        <div class="flex gap-3"><dt class="text-fog/40 w-28 shrink-0">Website</dt><dd><a href={talk.data.conference_url} target="_blank" rel="noopener noreferrer" class="text-mint hover:underline underline-offset-2">Event website ↗</a></dd></div>
+      )}
+    </dl>
+  </div>
+
+  <div class="mt-8">
+    <ShellShareButtons url={pageUrl} title={`${talk.data.title} — ${talk.data.event}`} />
+  </div>
+
+  {talk.data.bookable && (
+    <div class="mt-8">
+      <ShellCtaCard heading={CTA.talk.heading} subtext={CTA.talk.subtext} />
+    </div>
+  )}
+
+  {related.length > 0 && (
+    <div class="mt-10 pt-8 border-t border-jungle/10">
+      <h2 class="text-mint font-display text-lg mb-3">## Related talks</h2>
+      {related.map(t => (
+        <a href={`/dev/talks/${t.id}`} class="block py-2 border-t border-jungle/10 group">
+          <div class="flex items-baseline gap-3">
+            <span class="text-fog/40 text-xs w-24 shrink-0">{t.data.event}</span>
+            <span class="text-fog/90 group-hover:text-mint transition-colors">{t.data.title}</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  )}
+</ShellLayout>

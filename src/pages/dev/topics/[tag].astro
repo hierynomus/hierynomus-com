@@ -1,0 +1,89 @@
+---
+import { getCollection } from 'astro:content';
+import ShellLayout from '../../../layouts/ShellLayout.astro';
+
+export async function getStaticPaths() {
+  const talks = await getCollection('talks');
+  const writing = await getCollection('writing');
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+  const tagSet = new Set<string>();
+  for (const talk of talks) talk.data.tags.forEach(t => tagSet.add(t));
+  for (const article of writing) article.data.tags.forEach(t => tagSet.add(t));
+  for (const post of posts) post.data.tags.forEach(t => tagSet.add(t));
+
+  return [...tagSet].map(tag => ({ params: { tag } }));
+}
+
+const { tag } = Astro.params;
+
+const allTalks = await getCollection('talks');
+const allWriting = await getCollection('writing');
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+
+const filteredTalks = allTalks.filter(t => t.data.tags.includes(tag!)).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const filteredPosts = allPosts.filter(p => p.data.tags.includes(tag!)).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const filteredWriting = allWriting.filter(w => w.data.tags.includes(tag!)).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const dateLabel = (d: Date) => d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+---
+
+<ShellLayout
+  title={`Topic: ${tag}`}
+  description={`All talks, blog posts, and writing tagged with "${tag}" by Jeroen van Erp.`}
+  activeFile={`topic:${tag}`}
+  breadcrumb={[{ label: 'README.md', href: '/dev' }, { label: 'topics/', href: '/dev/topics' }, { label: tag! }]}
+>
+  <h1 class="font-display text-2xl font-bold text-fog mb-1"># {tag}</h1>
+  <p class="text-fog/50 text-sm mb-8">
+    {filteredTalks.length + filteredPosts.length + filteredWriting.length} item{filteredTalks.length + filteredPosts.length + filteredWriting.length === 1 ? '' : 's'} tagged
+  </p>
+
+  {filteredTalks.length > 0 && (
+    <div class="mb-10">
+      <h2 class="text-mint font-display text-lg mb-3">## Talks</h2>
+      {filteredTalks.map(talk => (
+        <a href={`/dev/talks/${talk.id}`} class="block py-2 border-t border-jungle/10 group">
+          <div class="flex items-baseline gap-3">
+            <span class="text-fog/40 text-xs w-24 shrink-0">{dateLabel(talk.data.date)}</span>
+            <span class="text-fog/90 group-hover:text-mint transition-colors">{talk.data.title}</span>
+          </div>
+          <p class="pl-27 text-fog/40 text-xs mt-0.5">{talk.data.event}</p>
+        </a>
+      ))}
+    </div>
+  )}
+
+  {filteredPosts.length > 0 && (
+    <div class="mb-10">
+      <h2 class="text-mint font-display text-lg mb-3">## Blog posts</h2>
+      {filteredPosts.map(post => (
+        <a href={`/dev/blog/${post.id}`} class="block py-2 border-t border-jungle/10 group">
+          <div class="flex items-baseline gap-3">
+            <span class="text-fog/40 text-xs w-24 shrink-0">{dateLabel(post.data.date)}</span>
+            <span class="text-fog/90 group-hover:text-mint transition-colors">{post.data.title}</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  )}
+
+  {filteredWriting.length > 0 && (
+    <div class="mb-10">
+      <h2 class="text-mint font-display text-lg mb-3">## External writing</h2>
+      {filteredWriting.map(article => (
+        <a href={article.data.url} target="_blank" rel="noopener noreferrer" class="block py-2 border-t border-jungle/10 group">
+          <div class="flex items-baseline gap-3">
+            <span class="text-fog/40 text-xs w-24 shrink-0">{dateLabel(article.data.date)}</span>
+            <span class="text-fog/90 group-hover:text-mint transition-colors">{article.data.title}</span>
+            <span class="text-fog/30 text-xs">↗ {article.data.publication}</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  )}
+
+  {filteredTalks.length === 0 && filteredPosts.length === 0 && filteredWriting.length === 0 && (
+    <p class="text-fog/40 italic">No content found for this topic.</p>
+  )}
+</ShellLayout>

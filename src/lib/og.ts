@@ -3,8 +3,8 @@ import { Resvg } from '@resvg/resvg-js';
 import fs from 'node:fs';
 import path from 'node:path';
 
-// Load Inter Bold from @fontsource/inter (woff — satori does not support woff2)
-const fontPath = path.resolve('node_modules/@fontsource/inter/files/inter-latin-700-normal.woff');
+// Load SUSE Bold from @fontsource/suse (woff — satori does not support woff2)
+const fontPath = path.resolve('node_modules/@fontsource/suse/files/suse-latin-700-normal.woff');
 const fontData = fs.readFileSync(fontPath);
 
 /**
@@ -52,7 +52,7 @@ export async function generateOgImage(opts: {
     const overlaySvg = await satori({
       type: 'div',
       props: {
-        style: { width: '1200px', height: '630px', display: 'flex', position: 'relative' as const, fontFamily: 'Inter' },
+        style: { width: '1200px', height: '630px', display: 'flex', position: 'relative' as const, fontFamily: 'SUSE' },
         children: [
           // Top mint stripe
           { type: 'div', props: { style: { position: 'absolute' as const, top: '0px', left: '0px', width: '1200px', height: '4px', backgroundColor: '#90ebcd' } } },
@@ -83,7 +83,7 @@ export async function generateOgImage(opts: {
     }, {
       width: 1200,
       height: 630,
-      fonts: [{ name: 'Inter', data: fontData, weight: 700, style: 'normal' }],
+      fonts: [{ name: 'SUSE', data: fontData, weight: 700, style: 'normal' }],
     });
 
     // Pass 2 — composite: pine background + circular avatar + overlay
@@ -116,7 +116,7 @@ export async function generateOgImage(opts: {
           display: 'flex',
           flexDirection: 'column' as const,
           backgroundColor: '#0c322c',
-          fontFamily: 'Inter',
+          fontFamily: 'SUSE',
         },
         children: [
           { type: 'div', props: { style: { height: '4px', backgroundColor: '#90ebcd', width: '100%' } } },
@@ -198,7 +198,7 @@ export async function generateOgImage(opts: {
         height: '630px',
         display: 'flex',
         position: 'relative' as const,
-        fontFamily: 'Inter',
+        fontFamily: 'SUSE',
         // No backgroundColor — root is transparent so background image shows through
       },
       children: [
@@ -304,7 +304,7 @@ export async function generateOgImage(opts: {
   }, {
     width: 1200,
     height: 630,
-    fonts: [{ name: 'Inter', data: fontData, weight: 700, style: 'normal' }],
+    fonts: [{ name: 'SUSE', data: fontData, weight: 700, style: 'normal' }],
   });
 
   // Composite: background PNG + overlay SVG in a single SVG that resvg can render.
@@ -325,7 +325,7 @@ async function render(element: object): Promise<Buffer> {
   const svg = await satori(element, {
     width: 1200,
     height: 630,
-    fonts: [{ name: 'Inter', data: fontData, weight: 700, style: 'normal' }],
+    fonts: [{ name: 'SUSE', data: fontData, weight: 700, style: 'normal' }],
   });
   const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });
   return Buffer.from(resvg.render().asPng());

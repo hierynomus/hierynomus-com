@@ -11,7 +11,7 @@ import SpeakingCtaSection from '../components/SpeakingCtaSection.astro';
 >
 
   <!-- Header -->
-  <section class="bg-gradient-to-br from-pine to-jungle py-16 sm:py-20">
+  <section class="hero-surface py-16 sm:py-20">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <p class="text-white/70 text-xs font-semibold tracking-[0.2em] uppercase mb-3">About</p>
       <h1 class="font-display text-4xl sm:text-5xl font-bold text-white mb-4">Jeroen van Erp</h1>
@@ -108,7 +108,6 @@ import SpeakingCtaSection from '../components/SpeakingCtaSection.astro';
         </div>
         <div>
           <p class="font-semibold text-pine dark:text-fog">SUSE</p>
-          <p class="text-pine/70 dark:text-fog/70 text-sm">The world's largest independent open source company</p>
         </div>
       </div>
       <p class="mt-6 text-pine/70 dark:text-fog/70 leading-relaxed max-w-2xl">
@@ -132,7 +131,8 @@ import SpeakingCtaSection from '../components/SpeakingCtaSection.astro';
           </p>
         </div>
         <button
-          id="copy-bio-btn"
+          type="button"
+          data-copy-trigger="press-bio-text"
           class="flex items-center gap-2 text-sm font-medium text-jungle dark:text-mint hover:underline underline-offset-2 transition-colors"
         >
           <svg class="w-4 h-4 js-copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -148,41 +148,10 @@ import SpeakingCtaSection from '../components/SpeakingCtaSection.astro';
   </section>
 
   <script>
-    function initPressBio() {
-      const btn = document.getElementById('copy-bio-btn');
-      const text = document.getElementById('press-bio-text');
-      if (!btn || !text) return;
-      if (btn.dataset.bound) return;
-      btn.dataset.bound = '1';
+    import { initCopyToClipboard } from '../lib/copy-to-clipboard';
 
-      btn.addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(text.textContent?.trim() ?? '');
-        } catch {
-          const el = document.createElement('textarea');
-          el.value = text.textContent?.trim() ?? '';
-          el.style.cssText = 'position:fixed;opacity:0';
-          document.body.appendChild(el);
-          el.select();
-          document.execCommand('copy');
-          document.body.removeChild(el);
-        }
-        const copyIcon = btn.querySelector('.js-copy-icon');
-        const checkIcon = btn.querySelector('.js-check-icon');
-        const label = btn.querySelector('.js-copy-label');
-        copyIcon?.classList.add('hidden');
-        checkIcon?.classList.remove('hidden');
-        if (label) label.textContent = 'Copied!';
-        setTimeout(() => {
-          copyIcon?.classList.remove('hidden');
-          checkIcon?.classList.add('hidden');
-          if (label) label.textContent = 'Copy to clipboard';
-        }, 2000);
-      });
-    }
-
-    initPressBio();
-    document.addEventListener('astro:page-load', initPressBio);
+    initCopyToClipboard();
+    document.addEventListener('astro:page-load', initCopyToClipboard);
   </script>
 
   <SpeakingCtaSection heading={CTA.section.heading} subtext={CTA.section.subtext} />

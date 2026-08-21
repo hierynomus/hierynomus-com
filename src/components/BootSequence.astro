@@ -1,0 +1,72 @@
+---
+---
+
+<!-- Tech-theme-only boot overlay. Rendered for every page load (cheap, ~40
+     lines of markup) but only ever made visible by its own script, and only
+     when the resolved theme is "tech" — corp visitors never see or pay for
+     it. -->
+<div
+  id="boot-sequence"
+  class="hidden fixed inset-0 z-[100] flex-col items-start justify-center gap-1 bg-pine px-6 font-sans text-sm text-jungle sm:px-12 sm:text-base"
+  aria-hidden="true"
+>
+  <p><span class="text-mint">$</span> ssh jeroen@hierynomus.com</p>
+  <p id="boot-line-1" class="opacity-0">Connecting&hellip; <span class="text-mint">OK</span></p>
+  <p id="boot-line-2" class="opacity-0">Loading profile&hellip; <span class="text-mint">OK</span></p>
+  <p id="boot-line-3" class="opacity-0">Welcome<span class="animate-pulse">_</span></p>
+</div>
+
+<script>
+  import { isTechTheme } from '../lib/theme';
+
+  const OVERLAY_ID = 'boot-sequence';
+  const SESSION_KEY = 'boot-sequence-shown';
+  const LINE_DELAY_MS = 220;
+  const HOLD_MS = 500;
+
+  function play() {
+    const overlay = document.getElementById(OVERLAY_ID);
+    if (!overlay) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const lines = Array.from(overlay.querySelectorAll<HTMLElement>('p[id^="boot-line-"]'));
+
+    if (reduceMotion) {
+      // Respect reduced-motion: never show the overlay at all, just skip straight
+      // to end state (page content, already visible underneath).
+      return;
+    }
+
+    overlay.classList.remove('hidden');
+    overlay.classList.add('flex');
+    lines.forEach(line => { line.style.opacity = '0'; });
+
+    lines.forEach((line, i) => {
+      setTimeout(() => { line.style.transition = 'opacity 120ms ease-out'; line.style.opacity = '1'; }, i * LINE_DELAY_MS);
+    });
+
+    const totalMs = lines.length * LINE_DELAY_MS + HOLD_MS;
+    setTimeout(() => {
+      overlay.style.transition = 'opacity 200ms ease-out';
+      overlay.style.opacity = '0';
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+        overlay.style.opacity = '';
+        overlay.style.transition = '';
+      }, 200);
+    }, totalMs);
+  }
+
+  // Plays once per browser session, the first time a tech page is loaded —
+  // whether that's a fresh visit straight to /dev or landing there via the
+  // ThemeSwitcher/CommandPalette's corp -> tech navigation. There's no
+  // separate "just switched" trigger: since corp and tech are now separate
+  // route trees (src/lib/theme.ts), switching is always a real navigation to
+  // a tech page, and that page's own load is this exact check — a same-page
+  // event fired from the corp side would only race that navigation.
+  if (isTechTheme() && !sessionStorage.getItem(SESSION_KEY)) {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    play();
+  }
+</script>

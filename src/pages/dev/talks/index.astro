@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+import ShellLayout from '../../../layouts/ShellLayout.astro';
+import { TYPE_CONFIG } from '../../../config/talks';
+import type { TalkType } from '../../../config/talks';
+import { META } from '../../../config/content';
+
+function typeLabel(type: TalkType): string {
+  return TYPE_CONFIG[type]?.label ?? type;
+}
+
+const allTalks = (await getCollection('talks')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const now = new Date();
+const upcomingTalks = allTalks.filter(t => t.data.date > now);
+const pastTalks = allTalks.filter(t => t.data.date <= now);
+
+const byYear = pastTalks.reduce<Record<number, typeof pastTalks>>((acc, talk) => {
+  const year = talk.data.date.getFullYear();
+  (acc[year] ??= []).push(talk);
+  return acc;
+}, {});
+const yearGroups = Object.entries(byYear)
+  .sort(([a], [b]) => Number(b) - Number(a))
+  .map(([year, talks]) => ({ year: Number(year), talks }));
+
+const dateLabel = (d: Date) => d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+---
+
+<ShellLayout
+  title={META.talks.title}
+  description={META.talks.description}
+  activeFile="talks-index"
+  breadcrumb={[{ label: 'README.md', href: '/dev' }, { label: 'talks/' }]}
+>
+  <h1 class="font-display text-2xl font-bold text-fog mb-6"># All Talks ({allTalks.length})</h1>
+
+  {upcomingTalks.length > 0 && (
+    <div class="mb-10">
+      <h2 class="text-persimmon font-display text-lg mb-2">## Upcoming</h2>
+      {upcomingTalks.map(talk => (
+        <a href={`/dev/talks/${talk.id}`} class="block py-2 border-t border-jungle/10 group">
+          <div class="flex items-baseline gap-3">
+            <span class="text-fog/40 text-xs w-24 shrink-0">{dateLabel(talk.data.date)}</span>
+            <span class="text-fog/90 group-hover:text-mint transition-colors">{talk.data.title}</span>
+          </div>
+          <p class="pl-27 text-fog/40 text-xs mt-0.5">{talk.data.event} · {typeLabel(talk.data.type)}</p>
+        </a>
+      ))}
+    </div>
+  )}
+
+  {yearGroups.map(({ year, talks }) => (
+    <div class="mb-10">
+      <h2 class="text-mint font-display text-lg mb-2">## {year}</h2>
+      {talks.map(talk => (
+        <a href={`/dev/talks/${talk.id}`} class="block py-2 border-t border-jungle/10 group">
+          <div class="flex items-baseline gap-3">
+            <span class="text-fog/40 text-xs w-24 shrink-0">{dateLabel(talk.data.date)}</span>
+            <span class="text-fog/90 group-hover:text-mint transition-colors">{talk.data.title}</span>
+          </div>
+          <p class="pl-27 text-fog/40 text-xs mt-0.5">{talk.data.event} · {typeLabel(talk.data.type)}</p>
+        </a>
+      ))}
+    </div>
+  ))}
+</ShellLayout>
