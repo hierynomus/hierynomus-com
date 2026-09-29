@@ -5,6 +5,7 @@ date: 2026-09-23
 type: conference
 tags: [containers, supply-chain-security, sbom, images, production]
 conference_url: https://www.wearedevelopers.com/world-congress-north-america
+video_url: https://www.youtube.com/live/PWnEW2v4HQU
 featured: true
 ---
 
