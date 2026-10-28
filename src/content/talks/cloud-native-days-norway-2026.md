@@ -6,6 +6,7 @@ endDate: 2026-10-27
 type: conference
 tags: [digital-sovereignty, cloud-native, open-source, kubernetes, security, platform-engineering]
 conference_url: https://2026.cloudnativedays.no
+slides_url: https://hierynomus.github.io/slides-cnds-norway-2026/
 featured: true
 bookable: true
 co_presenters:
