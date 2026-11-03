@@ -6,7 +6,6 @@ type: conference
 tags: [containers, supply-chain-security, sbom, images, production]
 conference_url: https://www.wearedevelopers.com/world-congress-north-america
 video_url: https://www.youtube.com/live/PWnEW2v4HQU
-featured: true
 ---
 
 You wouldn't serve mystery meat to guests — so why are you running it in your Kubernetes clusters?
